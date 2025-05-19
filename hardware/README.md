@@ -7,8 +7,7 @@
 - [Hardware](#hardware)
   - [Overview](#overview)
   - [Ergogen](#ergogen)
-    - [Nix Run](#nix-run)
-    - [Nix build](#nix-build)
+    - [Points](#points)
     - [Adding custom footprints](#adding-custom-footprints)
   - [External Resources](#external-resources)
   - [Components](#components)
@@ -19,51 +18,39 @@ For the generating the files we need for the hardware we'll be using [ergogen](h
 
 ## Ergogen
 
-We use ergogen to build the PCBs, outlines, cases, and points for us. There are two ways to get the output of our config:
+We use ergogen to build the PCBs, outlines, cases, and points for us. I made a nix wrapper to build the results from ergogen see [the contributing guide](../CONTRIBUTING.md) as ergogen does not generate STL files
 
-- nix run
-- nix build
+### Points
 
-The difference is that `nix run` is in place while `nix build` creates a derivation and doesn't change the repo at all.
+So there is one thing I discovered with Ergogen, to have an exact location that is the same on the outlines, cases, and PCBs, it needs to be a point. Points are originally used for key switches, but they work fine for other things. For this reason I added the following points:
 
-### Nix Run
+```YAML
+points:
+  zones:
+    ...
 
-To update the output folder without running the entire derivation:
+    # Microcontroller
+    microcontroller:
+      ...
 
-```sh
-nix run .#ergogen
+    # mounting holes
+    mounting_hole_top_right:
+      ...
+    mounting_hole_bottom_right:
+      ...
+    mounting_hole_bottom_middle:
+      ...
+    mounting_hole_top_left:
+      ...
+    mounting_hole_bottom_left:
+      ...
+
+    # Nix logo
+    nix_logo:
+      ...
 ```
 
-There is also a way to watch the config file and the footprints using:
-
-```sh
-nix run .#watch-ergogen
-```
-
-If you're already past the prototyping stage and want to wire the PCB you can run:
-
-```sh
-nix run .#pcb
-nix run .#watch-pcb
-```
-
-This will run ergogen and then copy the pcb output to the kicad folder, this way you can open kicad in the kicad folder and reopen the PCB every time you change to config to find an up to date version freshly generated.
-
-### Nix build
-
-To build any of it use:
-
-```SH
-nix build .#pcbs
-nix build .#outlines
-nix build .#cases
-nix build .#points
-
-# For all of them:
-nix build .#hardware
-```
-
-to build any of them. You can also get in a dev shell with ergogen using `nix develop` and then run ergogen manually.
+The next step is to create an outline
 
 ### Adding custom footprints
 
@@ -78,12 +65,13 @@ If you need any footprint that this repository is missing, you can find it's Jav
 - [The ergogen docs](https://docs.ergogen.xyz/) for any questions about how ergogen works.
 - [Web-based deployments](https://ergogen.ceoloide.com/) for getting a visual impression of what the keys look like.
 - [The ergogen v4 guid I used](https://flatfootfox.com/ergogen-introduction/) for a step by step tutorial.
-- [A website that converts JS CAD to STL](https://neorama.de/). This is nice as a JS CAD file isn't useful on its own.
+- [A website that converts JS CAD to STL](https://neorama.de/). This is nice as a JS CAD file isn't useful on its own. Though the flake does provide the openJScad package to convert them manually.
 
 ## Components
 
 Here are the components I used for my keyboard:
 
-- Choc key switches
-- a `pro micro` micro controller
-- my self made PCB
+- Choc key switches;
+- a `pro micro` microcontroller;
+- my self made PCB;
+- diodes.

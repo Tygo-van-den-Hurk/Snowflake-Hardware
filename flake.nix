@@ -80,7 +80,7 @@
             );
           };
 
-          pcb = {
+          update-pcb = {
             type = "app";
             program = builtins.toString (
               pkgs.writeShellScript "update-pcb" ''
@@ -99,7 +99,8 @@
                 set -e
                 ${pkgs.nodemon}/bin/nodemon \
                   --exec "nix run .#ergogen" \
-                  --watch "./hardware/src/**/*.*"
+                  --watch "./hardware/src/**/*.*" \
+                  --ext "yaml,yml,js"
               ''
             );
           };
@@ -111,7 +112,8 @@
                 set -e
                 ${pkgs.nodemon}/bin/nodemon \
                   --exec "nix run .#update-pcb" \
-                  --watch "./hardware/src/**/*.*"
+                  --watch "./hardware/src/**/*.*" \
+                  --ext "yaml,yml,js"
               ''
             );
           };
@@ -131,6 +133,7 @@
               act # Run / check GitHub Actions locally.
               git # Pull, commit, and push changes.
               kicad # View and wire the PCBs.
+              yq # parse and print YAML
             ]);
         };
 
@@ -219,6 +222,9 @@
               mkdir --parents $out/points
               cp --recursive ${points}/* $out/points
 
+              mkdir --parents $out/source
+              cp --recursive ${hardware-raw}/source/* $out/source
+
               runHook postInstall
             '';
           };
@@ -239,11 +245,34 @@
           outlines = pkgs.stdenv.mkDerivation rec {
             name = "pcb";
             src = ./hardware/src;
+
+            buildPhase = ''
+              runHook preBuild
+
+              root="$(pwd)"
+              mkdir --parents $root/outlines
+              for outline in ${hardware-raw}/outlines/*; do
+                if [ -f "$outline" ]; then
+                  name=$(basename "$outline" | sed 's/\..*//')
+                  if [[ "$name" == _* ]]; then
+                    echo "$outline starts with '_', skipping..."
+                    continue
+                  fi
+                  mkdir --parents $root/outlines/$name/
+                  cp $outline $root/outlines/$name/
+                else
+                  echo "$outline is not a file, skipping..."
+                fi
+              done
+
+              runHook postBuild
+            '';
+
             installPhase = ''
               runHook preInstall
 
               mkdir --parents $out
-              cp --recursive ${hardware-raw}/outlines/* $out
+              cp --recursive $root/outlines/* $out
 
               runHook postInstall
             '';
@@ -269,14 +298,21 @@
             buildPhase = ''
               runHook preBuild
 
-              mkdir --parents ./cases
-              cp --recursive ${hardware-raw}/cases/* cases/
-              for file in ./cases/*; do
-                if [ -f "$file" ]; then
-                  echo "trying to convert: $file into an STL file..."
-                  ${openjscad}/bin/openjscad $file -of stl
+              root="$(pwd)/cases"
+              mkdir --parents $root
+              for case in ${hardware-raw}/cases/*; do
+                if [ -f "$case" ]; then
+                  name=$(basename "$case" | sed 's/\..*//')
+                  # if [[ "$name" == _* ]]; then
+                  #   echo "$case starts with '_', skipping..."
+                  #   continue
+                  # fi
+                  mkdir --parents $root/$name/
+                  echo "trying to convert: $case into an STL file..."
+                  ${openjscad}/bin/openjscad $case -o $root/$name/$name.stl
+                  cp ${hardware-raw}/cases/$name* $root/$name/
                 else
-                  echo "$file is not a file, skipping..."
+                  echo "$case is not a file, skipping..."
                 fi
               done
 
@@ -287,7 +323,7 @@
               runHook preInstall
 
               mkdir --parents $out
-              cp --recursive cases/* $out
+              cp --recursive $root/* $out
 
               runHook postInstall
             '';
