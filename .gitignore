@@ -11,7 +11,11 @@
 **/fp-info-cache
 **/*-backups
 **/\~*
+
+# archives
 **/*.zip
+**/*.tar
+**/*.tar.gz
 
 # Drill and Gerber files
 **/*.gbr
