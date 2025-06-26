@@ -7,8 +7,8 @@
 
 X-common:
   keyboard:
-    name: &silk-text "Snowflake: v2.0.0"
-    version: &version "v2.0.0"
+    name: &silk-text "Snowflake: v3.0.0"
+    version: &version "v3.0.0"
     creator: &creator '"Tygo van den Hurk"'
   placement:
     - &any_place_where_a_key_is /(?:thumbfan|matrix)_.*/gi
@@ -128,7 +128,7 @@ points:
     mounting_hole_bottom_right:
       anchor:
         ref: thumbfan_far_thumb
-        shift: [8, 13]
+        shift: [0, 15]
       columns.x.rows.y.bind: [0, 0]
     mounting_hole_bottom_left:
       anchor:
@@ -273,7 +273,7 @@ outlines:
         - ref: microcontroller_x_y
           shift:
             - direction_R*( pcb_padding + Mx * 0.50 )
-            - direction_B*( pcb_padding + My * 0.50 )
+            - direction_B*( pcb_padding + My * 0.80 )
         #| Thumb cluster
         - ref: thumbfan_far_thumb
           shift:
@@ -363,7 +363,7 @@ outlines:
         - ref: microcontroller_x_y
           shift:
             - direction_R*( pcb_padding + case_padding + Mx * 0.50 )
-            - direction_B*( pcb_padding + My * 0.50 )
+            - direction_B*( pcb_padding + My * 0.80 )
         #| Thumb cluster
         - ref: thumbfan_far_thumb
           shift:
@@ -511,17 +511,16 @@ pcbs.snowflake:
     #` Reset switch
     reset-switch:
       what: buttons/wuerth-434121025816
+      params.r1: RST
+      params.r2: GND
       where:
         ref: microcontroller_x_y
         shift: *microcontroller_body_shift
       adjust:
-        rotate: 0
+        rotate: 270
         shift:
-          - direction_L*( Mx/8 - 0.70 )
-          - direction_B*( My/2 + 16.0 )
-      params:
-        r1: RST
-        r2: GND
+          - direction_L*( My/8 + 3.50 )
+          - direction_B*( My/2 + 7.00 )
 
     #` TRRS Connector
     connector:
@@ -530,15 +529,15 @@ pcbs.snowflake:
         reverse: true
         symmetric: false
         A: VCC
-        B: P2
-        C: P3
+        B: P3
+        C: P2
         D: GND
       where:
         ref: microcontroller_x_y
         shift: *microcontroller_body_shift
       adjust:
         shift:
-          - direction_R*(Mx/4)
+          - direction_R*(Mx/4 + 7)
           - direction_B*(My/2 + 8)
         rotate: -90
 
