@@ -134,6 +134,7 @@
               git # Pull, commit, and push changes.
               kicad # View and wire the PCBs.
               yq # parse and print YAML
+              openscad # manipulate 3D objects using SCAD.
               yamllint # parse and lint YAML. Nice for when ergogen says the yaml is invalid, but not why.
             ]);
         };
@@ -299,22 +300,40 @@
             buildPhase = ''
               runHook preBuild
 
+              echo "Creating the mirror scad script..."
+              mirror_scad_script="$(pwd)/mirror.scad"
+              echo "mirror([1,0,0]) import(input);" > $mirror_scad_script
+              echo "" >> $mirror_scad_script
+              cat $mirror_scad_script
+
               root="$(pwd)/cases"
               mkdir --parents $root
               for case in ${hardware-raw}/cases/*; do
-                if [ -f "$case" ]; then
-                  name=$(basename "$case" | sed 's/\..*//')
-                  # if [[ "$name" == _* ]]; then
-                  #   echo "$case starts with '_', skipping..."
-                  #   continue
-                  # fi
-                  mkdir --parents $root/$name/
-                  echo "trying to convert: $case into an STL file..."
-                  ${openjscad}/bin/openjscad $case -o $root/$name/$name.stl
-                  cp ${hardware-raw}/cases/$name* $root/$name/
-                else
+
+                echo "making sure it is a file..."
+                if [ ! -f "$case" ]; then
                   echo "$case is not a file, skipping..."
                 fi
+
+                name=$(basename "$case" | sed 's/\..*//')
+
+                echo "making sure it is not a private file..."
+                if [[ "$name" == _* ]]; then
+                  echo "$case starts with '_', skipping..."
+                  continue
+                fi
+
+                echo "Now processing '$name' case"
+                mkdir --parents $root/$name/
+
+                echo "trying to convert: '$name' into an STL file..."
+                ${openjscad}/bin/openjscad $case -o $root/$name/left.stl
+
+                echo "trying to mirror: '$name' into a right version..."
+                ${pkgs.openscad}/bin/openscad -o "$root/$name/right.stl" \
+                  -D "input=\"$root/$name/left.stl\"" "$mirror_scad_script"
+
+                cp $case $root/$name/blueprint.jscad
               done
 
               runHook postBuild
