@@ -11,7 +11,7 @@ documentation:
       - '^documentation\/'
       - '^docs\/'
 
-feature:
+enhancement:
   - head-branch:
       - '^feature\/'
       - '^feat\/'
