@@ -434,7 +434,7 @@
       "netlist": "",
       "plot": "gerber",
       "pos_files": "",
-      "specctra_dsn": "",
+      "specctra_dsn": "snowflake.dsn",
       "step": "",
       "svg": "",
       "vrml": ""

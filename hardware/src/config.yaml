@@ -1,4 +1,4 @@
-# yaml-language-server: $schema=https://raw.githubusercontent.com/ergogen/ergogen/daaef0af7912c7e011ec424421c36210969e3fae/meta/schema.json
+# //yaml-language-server: $schema=https://raw.githubusercontent.com/ergogen/ergogen/daaef0af7912c7e011ec424421c36210969e3fae/meta/schema.json
 #
 # This file is a config file from which `ergogen` will generate the PBCs, SVGs etc. I need those to build my keyboard.
 # To not run into issues use ergogen v4.0.2 just like me. (See nix flake for up to date version)
@@ -18,7 +18,9 @@ X-common:
   cases:
     - &mounting-holes-extrude 4
     - &wall-height 4
-
+  sides:
+    - &back-side B
+    - &frond-side F
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Meta ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 meta:
@@ -37,7 +39,9 @@ units:
   # Microcontroller sizes
   Mx: 19
   My: 32
-
+  # TRRS connector sizes
+  TRRSx: 13.0
+  TRRSy: 10.0
   #
   case_padding: 2.00 # The thickness of the walls around the case.
   pcb_padding: 2.00 # The space between the keys and the edge of the PCB.
@@ -70,21 +74,21 @@ points:
         shift: [100, -100]
       columns:
         pinky.key:
-          col_net: P15
+          col_net: P14
         ring.key:
           splay: -5
           origin: [-12, -19]
           stagger: 12
-          col_net: P18
+          col_net: P15
         middle.key:
           stagger: 5
-          col_net: P19
+          col_net: &middle-col-net P18
         index.key:
           stagger: -6
-          col_net: P20
+          col_net: &index-col-net P19
         inner.key:
           stagger: -2
-          col_net: P21
+          col_net: &outer-col-net P20
       rows:
         bottom:
           row_net: P6
@@ -100,11 +104,11 @@ points:
         shift: [-22, -23]
       columns:
         near.key:
-          col_net: P19
+          col_net: *middle-col-net
         home.key:
-          col_net: P20
+          col_net: *index-col-net
         far.key:
-          col_net: P21
+          col_net: *outer-col-net
           width: 1.5kx
       rows:
         thumb:
@@ -123,12 +127,12 @@ points:
     mounting_hole_top_right:
       anchor:
         ref: matrix_inner_top
-        shift: [(kx/2) + 3, 0]
+        shift: [(kx/2) + 3, 7.5]
       columns.x.rows.y.bind: [0, 0]
     mounting_hole_bottom_right:
       anchor:
         ref: thumbfan_far_thumb
-        shift: [0, 15]
+        shift: [direction_R*(7.5), direction_T*(12)]
       columns.x.rows.y.bind: [0, 0]
     mounting_hole_bottom_left:
       anchor:
@@ -143,6 +147,14 @@ points:
         shift: [6, -21]
       columns.x.rows.y.bind: [0, 0]
 
+    #` TRRS connector
+    trrs:
+      columns.x.rows.y.bind: [0, 0]
+      anchor:
+        ref: microcontroller_x_y
+        shift:
+          - direction_R*( Mx/2 - TRRSx/2 + case_padding)
+          - direction_B*( My/2 + 6.8500 )
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Outlines ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 outlines:
@@ -204,12 +216,31 @@ outlines:
         ref: mounting_hole_bottom_left_x_y
         shift: *mounting_hole_bottom_left_shift
 
+  #` Nix Logo
   _nix_logo:
     - what: circle
       radius: 8
       where:
         ref: nix_logo_x_y
         shift: &nix_logo_shift [0, 0]
+
+  #` TRRS connector
+  _trrs:
+    body:
+      what: rectangle
+      size: [TRRSx, TRRSy]
+      where:
+        ref: trrs_x_y
+        shift: &trrs_connector_shift [0, 0]
+    connector:
+      operation: add
+      what: rectangle
+      size: [case_padding + pcb_padding, TRRSy*(0.9)]
+      where:
+        ref: trrs_x_y
+        shift: *trrs_connector_shift
+      adjust:
+        shift: [TRRSx/2, 0]
 
   #` PCB shape
   _board:
@@ -413,46 +444,59 @@ outlines:
       operation: subtract
 
   preview:
-    - what: outline
+    case:
+      what: outline
       name: _board_xl
       operation: stack
-    - what: outline
+    board:
+      what: outline
       name: _board
       operation: stack
-    - what: outline
+    keys:
+      what: outline
       name: _keys
       operation: stack
-    - what: outline
+    microcontroller:
+      what: outline
       name: _microcontroller
       operation: stack
-
+    trrs:
+      what: outline
+      name: _trrs
+      operation: stack
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Cases ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
 
 cases:
   top:
-    - what: outline
-      name: _board
+    body:
+      what: outline
+      name: _board_xl
       extrude: 1
-      operation: subtract
-    - what: outline
+      operation: add
+    keys:
+      what: outline
       name: _keys
       extrude: &extrude-subtract 3
       operation: subtract
-      #` Microcontroller
-    - what: outline
+    microcontroller:
+      what: outline
       name: _microcontroller
       extrude: *extrude-subtract
       operation: subtract
-      #` Mounting holes
-    - what: outline
+    mounting_holes:
+      what: outline
       name: _mounting
       operation: subtract
-      #` Nix Logo
-    - what: outline
+    logo:
+      what: outline
       name: _nix_logo
       extrude: *extrude-subtract
       operation: subtract
-
+    trrs:
+      what: outline
+      name: _trrs
+      extrude: *extrude-subtract
+      operation: subtract
   bottom:
     #` Board
     - what: outline
@@ -496,6 +540,11 @@ pcbs.snowflake:
       outline: _nix_logo
       layer: Dwgs.User
 
+    #` TRRS connector
+    trrs:
+      outline: _trrs
+      layer: Eco1.User
+
   footprints:
     #` Micro controller
     promicro:
@@ -507,6 +556,24 @@ pcbs.snowflake:
         shift: *microcontroller_body_shift
       adjust:
         rotate: 270
+    keyboard_side_jumper:
+      # 3 way jumper for deciding the side.
+      # Connect this jumper with a resistor on the back to drive the pin high on one side,
+      # and low on another. This allows the PCB to figure out on what side it is by reading
+      # the pin that you connect this way.
+      what: jumpers/3-way
+      params.A: P21
+      params.B: GND
+      params.C: VCC
+      params.size: 2.54
+      where:
+        ref: microcontroller_x_y
+        shift: *microcontroller_body_shift
+      adjust:
+        rotate: 90
+        shift:
+          - direction_L*( Mx/4 - 2.0000 )
+          - direction_T*( My/8 + 0.5500 )
 
     #` Reset switch
     reset-switch:
@@ -519,27 +586,8 @@ pcbs.snowflake:
       adjust:
         rotate: 270
         shift:
-          - direction_L*( My/8 + 3.50 )
+          - direction_L*( My/8 + 3.50 ) # should this not be Mx???
           - direction_B*( My/2 + 7.00 )
-
-    #` TRRS Connector
-    connector:
-      what: trrs
-      params:
-        reverse: true
-        symmetric: false
-        A: VCC
-        B: P3
-        C: P2
-        D: GND
-      where:
-        ref: microcontroller_x_y
-        shift: *microcontroller_body_shift
-      adjust:
-        shift:
-          - direction_R*(Mx/4 + 7)
-          - direction_B*(My/2 + 8)
-        rotate: -90
 
     #` mounting holes
     mounting_hole_top_right:
@@ -639,6 +687,114 @@ pcbs.snowflake:
         layer: B.SilkS
         justify: left mirror
 
+    #` TRRS Connector
+    trrs_connector:
+      what: connectors/trrs-pj-320a-dual
+      params:
+        reverse: true
+        symmetric: false
+        drawing: false
+        A: VCC
+        B: GND
+        C: &i2c-scl P3
+        D: &i2c-sda P2
+      where:
+        ref: trrs_x_y
+        shift: *trrs_connector_shift
+      adjust.rotate: -90
+      adjust.shift:
+        - direction_R*( TRRSx/2 + 0.45 )
+        - direction_B*( TRRSy*0 + 1.15 )
+    trrs_side_jumper:
+      # For a I2C connection you need 2 pull up resistors that pull up the SDA and SCL lines.
+      # That is why I added this footprint, to solder on the resistors, one on each side.
+      what: jumpers/3-way
+      params.A: VCC
+      params.B: *i2c-sda
+      params.C: *i2c-scl
+      # params.size: 2.54
+      where:
+        ref: trrs_x_y
+        shift: *trrs_connector_shift
+      adjust.rotate: 0
+      adjust.shift: [direction_R*(1.75), 0]
+    route-P2-to-jumper-for-the-trrs-connector:
+      what: routing/trace
+      where:
+        ref: trrs_x_y
+        shift: *trrs_connector_shift
+      params:
+        side: *back-side
+        net: P3
+        points:
+          - start.x: &P2-to-jumper-start-x 1
+            start.y: &P2-to-jumper-start-y 3.3
+            end.x: &P2-to-jumper-middle-x 3
+            end.y: &P2-to-jumper-middle-y 0
+          - start.x: *P2-to-jumper-middle-x
+            start.y: *P2-to-jumper-middle-y
+            end.x: *P2-to-jumper-start-x
+            end.y: &P2-to-jumper-end-y -3.3
+    route-P3-to-jumper-for-the-trrs-connector:
+      what: routing/trace
+      where:
+        ref: trrs_x_y
+        shift: *trrs_connector_shift
+      params:
+        side: *frond-side
+        net: P2
+        points:
+          - start.x: &P3-to-jumper-start-x 4
+            start.y: *P2-to-jumper-start-y
+            end.x: *P2-to-jumper-middle-x
+            end.y: *P2-to-jumper-middle-y
+          - start.x: *P2-to-jumper-middle-x
+            start.y: *P2-to-jumper-middle-y
+            end.x: *P3-to-jumper-start-x
+            end.y: *P2-to-jumper-end-y
+    route-VCC-to-jumper-for-the-trrs-connector:
+      what: routing/trace
+      where:
+        ref: trrs_x_y
+        shift: *trrs_connector_shift
+      params:
+        side: *frond-side
+        net: VCC
+        points:
+          - start.x: &VCC-to-jumper-start-x -4
+            start.y: 1
+            end.x: &VCC-to-jumper-middle-x -3
+            end.y: &VCC-to-jumper-middle-y 0
+          - start.x: *VCC-to-jumper-start-x
+            start.y: -1
+            end.x: *VCC-to-jumper-middle-x
+            end.y: *VCC-to-jumper-middle-y
+          - start.x: *VCC-to-jumper-middle-x
+            start.y: *VCC-to-jumper-middle-y
+            end.x: 0.5
+            end.y: 0
+    route-GND-to-GND-for-the-trrs-connector:
+      what: routing/trace
+      where:
+        ref: trrs_x_y
+        shift: *trrs_connector_shift
+      params:
+        side: *frond-side
+        net: GND
+        points:
+          - start.x: &GND-to-GND-start-x -3.7
+            start.y: *P2-to-jumper-start-y
+            end.x: &GND-to-GND-middle-x -6.3
+            end.y: &GND-to-GND-middle-start-y 3.3
+          - start.x: *GND-to-GND-middle-x
+            start.y: *GND-to-GND-middle-start-y
+            end.x: *GND-to-GND-middle-x
+            end.y: &GND-to-GND-middle-end-y -3.3
+          - start.x: *GND-to-GND-middle-x
+            start.y: *GND-to-GND-middle-end-y
+            end.x: *GND-to-GND-start-x
+            end.y: *P2-to-jumper-end-y
+
     #` Keys
     choc-hotswap:
       what: choc
@@ -706,7 +862,7 @@ pcbs.snowflake:
       what: routing/trace
       where: *any_place_where_a_key_is
       params:
-        side: &route-back B
+        side: *back-side
         net: "{{name}}"
         points:
           - start: { x: *via-top-shift-x, y: *via-top-shift-y }
@@ -729,7 +885,7 @@ pcbs.snowflake:
       what: routing/trace
       where: *any_place_where_a_key_is
       params:
-        side: &route-frond F
+        side: *frond-side
         net: "{{name}}"
         points:
           - start: { x: *via-top-shift-x, y: *via-top-shift-y }
@@ -753,7 +909,7 @@ pcbs.snowflake:
       what: routing/trace
       where: *any_place_where_a_key_is
       params:
-        side: *route-frond
+        side: *frond-side
         net: "{{col_net}}"
         points:
           - start: { x: *via-middle-shift-x, y: *via-middle-shift-y }
@@ -776,7 +932,7 @@ pcbs.snowflake:
       what: routing/trace
       where: *any_place_where_a_key_is
       params:
-        side: *route-back
+        side: *back-side
         net: "{{col_net}}"
         points:
           - start: { x: *via-middle-shift-x, y: *via-middle-shift-y }
@@ -799,7 +955,7 @@ pcbs.snowflake:
       what: routing/trace
       where: *any_place_where_a_key_is
       params:
-        side: *route-back
+        side: *back-side
         net: "{{col_net}}"
         points:
           - start: { x: *via-middle-shift-x, y: *via-middle-shift-y }
@@ -813,7 +969,7 @@ pcbs.snowflake:
       what: routing/trace
       where: *any_key_expect_the_outer_ones
       params:
-        side: *route-frond
+        side: *frond-side
         net: "{{row_net}}"
         points:
           - start: { y: &lower-via-route-start-y 8.5, x: -7.5 }
@@ -822,7 +978,7 @@ pcbs.snowflake:
       what: routing/trace
       where: *any_key_expect_the_outer_ones
       params:
-        side: *route-back
+        side: *back-side
         net: "{{row_net}}"
         points:
           - start:
@@ -842,7 +998,7 @@ pcbs.snowflake:
       what: routing/trace
       where: *main_key_matrix_except_top
       params:
-        side: *route-back
+        side: *back-side
         net: "{{name}}"
         points:
           - start:
@@ -855,7 +1011,7 @@ pcbs.snowflake:
       what: routing/trace
       where: *main_key_matrix_except_top
       params:
-        side: *route-frond
+        side: *frond-side
         net: "{{name}}"
         points:
           - start:
@@ -869,7 +1025,7 @@ pcbs.snowflake:
       what: routing/trace
       where: *main_key_matrix_except_bottom
       params:
-        side: *route-back
+        side: *back-side
         net: "{{name}}"
         points:
           - start:
@@ -882,7 +1038,7 @@ pcbs.snowflake:
       what: routing/trace
       where: *main_key_matrix_except_bottom
       params:
-        side: *route-frond
+        side: *frond-side
         net: "{{name}}"
         points:
           - start:

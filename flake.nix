@@ -134,6 +134,7 @@
               git # Pull, commit, and push changes.
               kicad # View and wire the PCBs.
               yq # parse and print YAML
+              yamllint # parse and lint YAML. Nice for when ergogen says the yaml is invalid, but not why.
             ]);
         };
 
