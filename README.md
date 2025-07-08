@@ -1,4 +1,4 @@
-> This repository will be used for making of my first custom keyboard: _Snowflake_
+> This repository will be used for making the hardware of my first custom keyboard: _Snowflake_
 
 <br>
 <div align="center">
@@ -42,16 +42,18 @@
     <img src="https://img.shields.io/github/repo-size/Tygo-van-den-Hurk/keyboard?style=flat" alt="the size of the repository" />
   </a>   
   <br><br>
-  <img src="./hardware/images/svg/snowflake.svg">
+  <img src="./images/svg/snowflake.svg">
 </div>
 <br>
 
-# Snowflake
+# Snowflake (hardware)
 
-- [Snowflake](#snowflake)
+- [Snowflake (hardware)](#snowflake-hardware)
   - [Overview](#overview)
   - [Documentation](#documentation)
   - [Credits](#credits)
+  - [External Resources](#external-resources)
+  - [Licence](#licence)
 
 ## Overview
 
@@ -59,7 +61,9 @@ So this repository is for the journey of me making my first keyboard: _Snowflake
 
 ## Documentation
 
-There are two parts to this journey: [hardware](./hardware/README.md), and [software](./software/README.md). You can learn more in their respective documentation submodules. If you need to know anything else and it's not in the docs you can open a issue or even PR and I'll fix/add it.
+There are two parts to this journey: hardware and software. This repository is used for generating the hardware side of things. Since different iterations of the hardware have different pinouts or other physical workings each iteration has its own firmware repository. See `github.com/Tygo-van-den-Hurk/Snowflake-V*-Firmware` for your firmware. Where `*` is the major version you have. There will be documentation on how to build or flash the respective firmware.
+
+As for the hardware part, see the [`/docs`](./docs/README.md) for more.
 
 ## Credits
 
@@ -70,3 +74,14 @@ This code is written by, or using the help of:
 - [@Tygo-van-den-Hurk](https://github.com/Tygo-van-den-Hurk)
 
 To see how to start or develop see [CONTRIBUTING.md](./CONTRIBUTING.md).
+
+## External Resources
+
+- [The ergogen docs](https://docs.ergogen.xyz/) for any questions about how ergogen works.
+- [Web-based deployments](https://ergogen.ceoloide.com/) for getting a visual impression of what the keys look like.
+- [The ergogen v4 guid I used](https://flatfootfox.com/ergogen-introduction/) for a step by step tutorial.
+- [A website that converts JS CAD to STL](https://neorama.de/) if you saw this but can't use nix.
+
+## Licence
+
+All files within this repository fall under a licence. See [LICENCE](./LICENSE) for more information.
