@@ -185,7 +185,7 @@
 
           # all the hardware files, excluding post processing
           hardware-raw = pkgs.stdenv.mkDerivation rec {
-            name = "pcb";
+            name = "hardware-raw";
             src = ./hardware/src;
 
             buildPhase = ''
@@ -208,7 +208,7 @@
 
           # all the hardware files, including post processing
           hardware = pkgs.stdenv.mkDerivation rec {
-            name = "pcb";
+            name = "hardware";
             src = ./hardware/src;
             installPhase = ''
               runHook preInstall
@@ -246,7 +246,7 @@
           };
 
           outlines = pkgs.stdenv.mkDerivation rec {
-            name = "pcb";
+            name = "outlines";
             src = ./hardware/src;
 
             buildPhase = ''
@@ -282,7 +282,7 @@
           };
 
           points = pkgs.stdenv.mkDerivation rec {
-            name = "pcb";
+            name = "points";
             src = ./hardware/src;
             installPhase = ''
               runHook preInstall
@@ -295,7 +295,7 @@
           };
 
           cases = pkgs.stdenv.mkDerivation rec {
-            name = "pcb";
+            name = "cases";
             src = ./hardware/src;
 
             buildPhase = ''
