@@ -325,14 +325,38 @@
                 fi
 
                 echo "Now processing '$name' case"
-                mkdir --parents $root/$name/
+                mkdir --parents $root/$name/left
+                mkdir --parents $root/$name/right
 
                 echo "trying to convert: '$name' into an STL file..."
-                ${openjscad}/bin/openjscad $case -o $root/$name/left.stl
+                ${openjscad}/bin/openjscad $case -o $root/$name/left/case.raw.stl
+
+                echo "Checking $root/$name/left/case.raw.stl for mistakes and fixing them"
+                ${admesh}/bin/admesh $root/$name/left/case.raw.stl \
+                  --tolerance=1e-5 --iterations=3 --increment=5e-7 \
+                  --fill-holes --remove-unconnected --nearby \
+                  --normal-directions --exact --normal-values \
+                  --write-binary-stl=$root/$name/left/case.binary.stl \
+                  --write-ascii-stl=$root/$name/left/case.ascii.stl \
+                  --write-dxf=$root/$name/left/case.dxf \
+                  --write-off=$root/$name/left/case.off \
+                  --write-vrml=$root/$name/left/case.vrml
 
                 echo "trying to mirror: '$name' into a right version..."
-                ${pkgs.openscad}/bin/openscad -o "$root/$name/right.stl" \
-                  -D "input=\"$root/$name/left.stl\"" "$mirror_scad_script"
+                ${pkgs.openscad}/bin/openscad -o "$root/$name/right/case.raw.stl" \
+                  -D "input=\"$root/$name/left/case.raw.stl\"" "$mirror_scad_script"
+
+                echo ""
+                echo "Checking $root/$name/right/case.raw.stl for mistakes and fixing them"
+                ${admesh}/bin/admesh $root/$name/right/case.raw.stl \
+                  --tolerance=1e-5 --iterations=3 --increment=5e-7 \
+                  --fill-holes --remove-unconnected --nearby \
+                  --normal-directions --exact --normal-values \
+                  --write-binary-stl=$root/$name/right/case.binary.stl \
+                  --write-ascii-stl=$root/$name/right/case.ascii.stl \
+                  --write-dxf=$root/$name/right/case.dxf \
+                  --write-off=$root/$name/right/case.off \
+                  --write-vrml=$root/$name/right/case.vrml
 
                 cp $case $root/$name/blueprint.jscad
               done
