@@ -1,0 +1,1050 @@
+# //yaml-language-server: $schema=https://raw.githubusercontent.com/ergogen/ergogen/daaef0af7912c7e011ec424421c36210969e3fae/meta/schema.json
+#
+# This file is a config file from which `ergogen` will generate the PBCs, SVGs etc. I need those to build my keyboard.
+# To not run into issues use ergogen v4.0.2 just like me. (See nix flake for up to date version)
+#
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+
+X-common:
+  keyboard:
+    name: &silk-text "Snowflake: v3.0.0"
+    version: &version "v3.0.0"
+    creator: &creator '"Tygo van den Hurk"'
+  placement:
+    - &any_place_where_a_key_is /(?:thumbfan|matrix)_.*/gi
+    - &main_key_matrix_except_top /^matrix_(?!.*top).*$/gi
+    - &main_key_matrix_except_bottom /^matrix_(?!.*bottom).*$/gi
+    - &any_key_expect_the_outer_ones /(?:^matrix_(?!pinky)|^thumbfan_(?!.*near)).*$/gi
+  cases:
+    - &mounting-holes-extrude 4
+    - &wall-height 4
+  sides:
+    - &back-side B
+    - &frond-side F
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Meta ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+
+meta:
+  version: *version
+  author: *creator
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Units ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+
+units:
+  # Proxy Spacing Variables
+  kx: cx
+  ky: cy
+  # Padding Variables
+  px: cx + 4
+  py: cy + 4
+  # Microcontroller sizes
+  Mx: 19
+  My: 32
+  # TRRS connector sizes
+  TRRSx: 13.0
+  TRRSy: 10.0
+  #
+  case_padding: 2.00 # The thickness of the walls around the case.
+  pcb_padding: 2.00 # The space between the keys and the edge of the PCB.
+  extra_trace: 1.00 # The extra amount of padding 1 extra trace requires.
+
+  # Directions (functions that take care of whether something is positive or negative)
+  direction_T: 1.00 # Top
+  direction_R: 1.00 # Right
+  direction_B: -1.00 # Bottom
+  direction_L: -1.00 # Left
+
+  #
+  mounting_hole_outer_radius: 2.5
+  mounting_hole_outer_diameter: 2*mounting_hole_outer_radius
+  mounting_hole_inner_radius: 1.5
+  mounting_hole_inner_diameter: 2*mounting_hole_inner_radius
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Points ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+
+points:
+  rotate: 0
+  zones:
+    #` Main key cluster
+    matrix:
+      key:
+        padding: 1ky
+        spread: 1kx
+      anchor:
+        rotate: 5
+        shift: [100, -100]
+      columns:
+        pinky.key:
+          col_net: P14
+        ring.key:
+          splay: -5
+          origin: [-12, -19]
+          stagger: 12
+          col_net: P15
+        middle.key:
+          stagger: 5
+          col_net: &middle-col-net P18
+        index.key:
+          stagger: -6
+          col_net: &index-col-net P19
+        inner.key:
+          stagger: -2
+          col_net: &outer-col-net P20
+      rows:
+        bottom:
+          row_net: P6
+        home:
+          row_net: P5
+        top:
+          row_net: P4
+
+    #` Thumb cluster
+    thumbfan:
+      anchor:
+        ref: matrix_inner_bottom
+        shift: [-22, -23]
+      columns:
+        near.key:
+          col_net: *middle-col-net
+        home.key:
+          col_net: *index-col-net
+        far.key:
+          col_net: *outer-col-net
+          width: 1.5kx
+      rows:
+        thumb:
+          row_net: P7
+
+    #` Micro Controller
+    microcontroller:
+      anchor:
+        ref: matrix_index_top
+        shift:
+          - 3*(kx/2) + (Mx/2) + 6
+          - 1*(ky/2) - (My/2)
+      columns.x.rows.y.bind: [0, 0]
+
+    #` mounting holes
+    mounting_hole_top_right:
+      anchor:
+        ref: matrix_inner_top
+        shift: [(kx/2) + 3, 7.5]
+      columns.x.rows.y.bind: [0, 0]
+    mounting_hole_bottom_right:
+      anchor:
+        ref: thumbfan_far_thumb
+        shift: [direction_R*(7.5), direction_T*(12)]
+      columns.x.rows.y.bind: [0, 0]
+    mounting_hole_bottom_left:
+      anchor:
+        ref: matrix_ring_bottom
+        shift: [-6, -12.5]
+      columns.x.rows.y.bind: [0, 0]
+
+    #` Nix logo
+    nix_logo:
+      anchor:
+        ref: matrix_ring_bottom
+        shift: [6, -21]
+      columns.x.rows.y.bind: [0, 0]
+
+    #` TRRS connector
+    trrs:
+      columns.x.rows.y.bind: [0, 0]
+      anchor:
+        ref: microcontroller_x_y
+        shift:
+          - direction_R*( Mx/2 - TRRSx/2 + case_padding)
+          - direction_B*( My/2 + 6.8500 )
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Outlines ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+
+outlines:
+  #` Keys
+  _keys:
+    - what: rectangle
+      fillet: 2
+      where: *any_place_where_a_key_is
+      size: [1cx - 0.5, 1cy - 0.5]
+
+  #` Microcontroller
+  _microcontroller:
+    # Sizes depend on your micro controller do NOT change to move, move point see above instead.
+    - what: rectangle
+      size: [Mx, My]
+      fillet: 1
+      where:
+        ref: microcontroller_x_y
+        shift: &microcontroller_body_shift [0, 0]
+      adjust:
+        rotate: 0
+
+  #` mounting holes
+  _mounting:
+    #| top right
+    - what: circle # outer
+      radius: mounting_hole_outer_radius
+      where:
+        ref: mounting_hole_top_right_x_y
+        shift: &mounting_hole_top_right_shift [0, 0]
+    - what: circle # inner
+      radius: mounting_hole_inner_radius
+      operation: subtract
+      where:
+        ref: mounting_hole_top_right_x_y
+        shift: *mounting_hole_top_right_shift
+    #| bottom right
+    - what: circle # outer
+      radius: mounting_hole_outer_radius
+      where:
+        ref: mounting_hole_bottom_right_x_y
+        shift: &mounting_hole_bottom_right_shift [0, 0]
+    - what: circle # inner
+      radius: mounting_hole_inner_radius
+      operation: subtract
+      where:
+        ref: mounting_hole_bottom_right_x_y
+        shift: *mounting_hole_bottom_right_shift
+    #| bottom left
+    - what: circle # outer
+      radius: mounting_hole_outer_radius
+      where:
+        ref: mounting_hole_bottom_left_x_y
+        shift: &mounting_hole_bottom_left_shift [0, 0]
+    - what: circle # inner
+      radius: mounting_hole_inner_radius
+      operation: subtract
+      where:
+        ref: mounting_hole_bottom_left_x_y
+        shift: *mounting_hole_bottom_left_shift
+
+  #` Nix Logo
+  _nix_logo:
+    - what: circle
+      radius: 8
+      where:
+        ref: nix_logo_x_y
+        shift: &nix_logo_shift [0, 0]
+
+  #` TRRS connector
+  _trrs:
+    body:
+      what: rectangle
+      size: [TRRSx, TRRSy]
+      where:
+        ref: trrs_x_y
+        shift: &trrs_connector_shift [0, 0]
+    connector:
+      operation: add
+      what: rectangle
+      size: [case_padding + pcb_padding, TRRSy*(0.9)]
+      where:
+        ref: trrs_x_y
+        shift: *trrs_connector_shift
+      adjust:
+        shift: [TRRSx/2, 0]
+
+  #` PCB shape
+  _board:
+    - what: polygon
+      operation: stack
+      fillet: 1
+      points:
+        #| Pinky finger
+        - ref: matrix_pinky_bottom
+          shift:
+            - direction_L*( pcb_padding + kx * 0.50 )
+            - direction_B*( pcb_padding + ky * 0.50 )
+        - ref: matrix_pinky_top
+          shift:
+            - direction_L*( pcb_padding + kx * 0.50 )
+            - direction_T*( pcb_padding + ky * 0.50 )
+        # - ref: matrix_pinky_top
+        #   shift:
+        #     - direction_R*( pcb_padding + kx * 0.50 )
+        #     - direction_T*( pcb_padding + ky * 0.50 )
+        #| Ring finger
+        - ref: matrix_ring_home
+          shift:
+            - direction_L*( pcb_padding + kx * 0.50 )
+            - direction_T*( pcb_padding + ky * 0.95 - pcb_padding )
+        - ref: matrix_ring_top
+          shift:
+            - direction_L*( pcb_padding + kx * 0.50 )
+            - direction_T*( pcb_padding + ky * 0.50 )
+        #| Middle finger
+        - ref: matrix_middle_home
+          shift:
+            - direction_L*( pcb_padding + kx * 0.50 )
+            - direction_T*( pcb_padding + ky * 1.20 )
+        - ref: matrix_middle_top
+          shift:
+            - direction_L*( pcb_padding + kx * 0.50 )
+            - direction_T*( pcb_padding + ky * 0.50 )
+        - ref: matrix_middle_top
+          shift:
+            - direction_R*( pcb_padding + kx * 0.50 )
+            - direction_T*( pcb_padding + ky * 0.50 )
+        - ref: matrix_middle_top
+          shift:
+            - direction_R*( pcb_padding + kx * 0.50 )
+            - direction_T*( pcb_padding + ky * 0.15 )
+        #| Index finger
+        - ref: matrix_index_top
+          shift:
+            - direction_R*( pcb_padding + kx * 0.50 )
+            - direction_T*( pcb_padding + ky * 0.50 )
+        #| Micro controller
+        - ref: microcontroller_x_y
+          shift:
+            - direction_L*( pcb_padding + Mx * 0.50 )
+            - direction_T*( pcb_padding + My * 0.50 )
+        - ref: microcontroller_x_y
+          shift:
+            - direction_R*( pcb_padding + Mx * 0.50 )
+            - direction_T*( pcb_padding + My * 0.50 )
+        - ref: microcontroller_x_y
+          shift:
+            - direction_R*( pcb_padding + Mx * 0.50 )
+            - direction_B*( pcb_padding + My * 0.80 )
+        #| Thumb cluster
+        - ref: thumbfan_far_thumb
+          shift:
+            - direction_R*( pcb_padding + kx * 0.50 )
+            - direction_T*( pcb_padding + ky * 0.50 )
+        - ref: thumbfan_far_thumb
+          shift:
+            - direction_R*( pcb_padding + kx * 0.50 )
+            - direction_B*( pcb_padding + ky * 0.50 )
+        - ref: thumbfan_far_thumb
+          shift:
+            - direction_L*( pcb_padding + kx * 0.50 )
+            - direction_B*( pcb_padding + ky * 0.50 )
+        - ref: thumbfan_near_thumb
+          shift:
+            - direction_R*( pcb_padding + kx * 0.50 )
+            - direction_B*( pcb_padding + ky * 0.50 )
+        - ref: thumbfan_near_thumb
+          shift:
+            - direction_L*( pcb_padding + kx * 0.50 )
+            - direction_B*( pcb_padding + ky * 0.50 )
+
+  _board_xl:
+    - what: polygon
+      operation: stack
+      fillet: 2
+      points:
+        # Copy the points from `_board` and replace all instances of `pcb_padding` with `(pcb_padding + case_padding)`.
+        # since it is not perfect, you will have to clean up unfortunately.
+        #| Pinky finger
+        - ref: matrix_pinky_bottom
+          shift:
+            - direction_L*( pcb_padding + kx * 0.50 )
+            - direction_B*( pcb_padding + case_padding + ky * 0.50 )
+        - ref: matrix_pinky_bottom
+          shift:
+            - direction_L*( pcb_padding + case_padding + kx * 0.50 )
+            - direction_B*( pcb_padding + case_padding + ky * 0.50 )
+        - ref: matrix_pinky_bottom
+          shift:
+            - direction_L*( pcb_padding + case_padding + kx * 0.50 )
+            - direction_B*( pcb_padding + ky * 0.50 )
+        - ref: matrix_pinky_top
+          shift:
+            - direction_L*( pcb_padding + case_padding + kx * 0.50 )
+            - direction_T*( pcb_padding + case_padding + ky * 0.50 )
+        #| Ring finger
+        - ref: matrix_ring_home
+          shift:
+            - direction_L*( pcb_padding + case_padding + kx * 0.50 )
+            - direction_T*( pcb_padding + case_padding + ky * 1.05 - pcb_padding - case_padding )
+        - ref: matrix_ring_top
+          shift:
+            - direction_L*( pcb_padding + case_padding + kx * 0.50 )
+            - direction_T*( pcb_padding + case_padding + ky * 0.50 )
+        #| Middle finger
+        - ref: matrix_middle_home
+          shift:
+            - direction_L*( pcb_padding + case_padding + kx * 0.50 )
+            - direction_T*( pcb_padding + case_padding + ky * 1.20 )
+        - ref: matrix_middle_top
+          shift:
+            - direction_L*( pcb_padding + case_padding + kx * 0.50 )
+            - direction_T*( pcb_padding + case_padding + ky * 0.50 )
+        - ref: matrix_middle_top
+          shift:
+            - direction_R*( pcb_padding + case_padding + kx * 0.50 )
+            - direction_T*( pcb_padding + case_padding + ky * 0.50 )
+        - ref: matrix_middle_top
+          shift:
+            - direction_R*( pcb_padding + case_padding + kx * 0.50 )
+            - direction_T*( pcb_padding + case_padding + ky * 0.15 )
+        #| Index finger
+        - ref: matrix_index_top
+          shift:
+            - direction_R*( pcb_padding + case_padding + kx * 0.50 )
+            - direction_T*( pcb_padding + case_padding + ky * 0.50 )
+        #| Micro controller
+        - ref: microcontroller_x_y
+          shift:
+            - direction_L*( pcb_padding + case_padding + Mx * 0.50 )
+            - direction_T*( pcb_padding + case_padding + My * 0.50 )
+        - ref: microcontroller_x_y
+          shift:
+            - direction_R*( pcb_padding + case_padding + Mx * 0.50 )
+            - direction_T*( pcb_padding + case_padding + My * 0.50 )
+        - ref: microcontroller_x_y
+          shift:
+            - direction_R*( pcb_padding + case_padding + Mx * 0.50 )
+            - direction_B*( pcb_padding + My * 0.80 )
+        #| Thumb cluster
+        - ref: thumbfan_far_thumb
+          shift:
+            - direction_R*( pcb_padding + case_padding + kx * 0.50 )
+            - direction_T*( pcb_padding + ky * 0.50 )
+        - ref: thumbfan_far_thumb
+          shift:
+            - direction_R*( pcb_padding + case_padding + kx * 0.50 )
+            - direction_B*( pcb_padding + case_padding + ky * 0.50 )
+        - ref: thumbfan_far_thumb
+          shift:
+            - direction_L*( pcb_padding + case_padding + kx * 0.50 )
+            - direction_B*( pcb_padding + case_padding + ky * 0.50 )
+        - ref: thumbfan_near_thumb
+          shift:
+            - direction_R*( pcb_padding + case_padding + kx * 0.50 )
+            - direction_B*( pcb_padding + case_padding + ky * 0.50 )
+        - ref: thumbfan_near_thumb
+          shift:
+            - direction_L*( pcb_padding + kx * 0.50 )
+            - direction_B*( pcb_padding + case_padding + ky * 0.50 )
+
+  _walls:
+    - what: outline
+      name: _board_xl
+    - what: outline
+      name: _board
+      operation: subtract
+
+  combo:
+    - what: outline
+      name: _board
+    - what: outline
+      name: _keys
+      operation: subtract
+      #` Microcontroller
+    - what: outline
+      name: _microcontroller
+      operation: subtract
+      #` Mounting holes
+    - what: outline
+      name: _mounting
+      operation: subtract
+      #` Nix logo cut out
+    - what: outline
+      name: _nix_logo
+      operation: subtract
+
+  preview:
+    case:
+      what: outline
+      name: _board_xl
+      operation: stack
+    board:
+      what: outline
+      name: _board
+      operation: stack
+    keys:
+      what: outline
+      name: _keys
+      operation: stack
+    microcontroller:
+      what: outline
+      name: _microcontroller
+      operation: stack
+    trrs:
+      what: outline
+      name: _trrs
+      operation: stack
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ Cases ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+
+cases:
+  top:
+    body:
+      what: outline
+      name: _board_xl
+      extrude: 1
+      operation: add
+    keys:
+      what: outline
+      name: _keys
+      extrude: &extrude-subtract 3
+      operation: subtract
+    microcontroller:
+      what: outline
+      name: _microcontroller
+      extrude: *extrude-subtract
+      operation: subtract
+    mounting_holes:
+      what: outline
+      name: _mounting
+      operation: subtract
+    logo:
+      what: outline
+      name: _nix_logo
+      extrude: *extrude-subtract
+      operation: subtract
+    trrs:
+      what: outline
+      name: _trrs
+      extrude: *extrude-subtract
+      operation: subtract
+  bottom:
+    #` Board
+    - what: outline
+      name: _board
+      extrude: 1
+      operation: subtract
+      #` Walls
+    - what: outline
+      name: _walls
+      extrude: *wall-height
+      operation: add
+      #` Mounting holes
+    - what: outline
+      name: _mounting
+      extrude: *mounting-holes-extrude
+      operation: add
+
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ PCBs ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
+
+pcbs.snowflake:
+  outlines:
+    main:
+      outline: _board
+      layer: Edge.Cuts
+    keys:
+      outline: _keys
+      layer: Eco1.User
+
+    #` Micro controller
+    microcontroller:
+      outline: _microcontroller
+      layer: Eco1.User
+
+    #` mounting holes
+    mounting:
+      outline: _mounting
+      layer: Eco1.User
+
+    #` Nix Logo
+    nix_logo:
+      outline: _nix_logo
+      layer: Dwgs.User
+
+    #` TRRS connector
+    trrs:
+      outline: _trrs
+      layer: Eco1.User
+
+  footprints:
+    #` Micro controller
+    promicro:
+      what: controllers/promicro_pretty
+      where:
+        # don't move or it won't match with the
+        # outline, move the outline instead!!!
+        ref: microcontroller_x_y
+        shift: *microcontroller_body_shift
+      adjust:
+        rotate: 270
+    keyboard_side_jumper:
+      # 3 way jumper for deciding the side.
+      # Connect this jumper with a resistor on the back to drive the pin high on one side,
+      # and low on another. This allows the PCB to figure out on what side it is by reading
+      # the pin that you connect this way.
+      what: jumpers/3-way
+      params.A: P21
+      params.B: GND
+      params.C: VCC
+      params.size: 2.54
+      where:
+        ref: microcontroller_x_y
+        shift: *microcontroller_body_shift
+      adjust:
+        rotate: 90
+        shift:
+          - direction_L*( Mx/4 - 2.0000 )
+          - direction_T*( My/8 + 0.5500 )
+
+    #` Reset switch
+    reset-switch:
+      what: buttons/wuerth-434121025816
+      params.r1: RST
+      params.r2: GND
+      where:
+        ref: microcontroller_x_y
+        shift: *microcontroller_body_shift
+      adjust:
+        rotate: 270
+        shift:
+          - direction_L*( My/8 + 3.50 ) # should this not be Mx???
+          - direction_B*( My/2 + 7.00 )
+
+    #` mounting holes
+    mounting_hole_top_right:
+      what: mounting-holes/m2
+      where:
+        ref: mounting_hole_top_right_x_y
+        shift: *mounting_hole_top_right_shift
+    mounting_hole_bottom_right:
+      what: mounting-holes/m2
+      where:
+        ref: mounting_hole_bottom_right_x_y
+        shift: *mounting_hole_bottom_right_shift
+    mounting_hole_bottom_left:
+      what: mounting-holes/m2
+      where:
+        ref: mounting_hole_bottom_left_x_y
+        shift: *mounting_hole_bottom_left_shift
+
+    #` NixOS Logo
+    # see: https://raw.githubusercontent.com/Tygo-van-den-Hurk/keyboard/refs/tags/v1.0.0/ergogen/images/nix.svg to
+    # know what color nix piece refers to what.
+    nix-piece-orange: &icon
+      what: decoration/images/nix-piece
+      params:
+        scale: 0.03
+      where:
+        ref: nix_logo_x_y
+        shift: *nix_logo_shift
+      adjust:
+        shift: [-19.06, -8.44]
+        rotate: -14.4
+    nix-piece-yellow:
+      <<: *icon
+      where:
+        ref: nix_logo_x_y
+        shift: *nix_logo_shift
+      adjust:
+        shift: [-2.12, -20.77]
+        rotate: 45.6
+    nix-piece-green:
+      <<: *icon
+      where:
+        ref: nix_logo_x_y
+        shift: *nix_logo_shift
+      adjust:
+        shift: [17.04, -12.26]
+        rotate: 105.60
+    nix-piece-blue:
+      <<: *icon
+      where:
+        ref: nix_logo_x_y
+        shift: *nix_logo_shift
+      adjust:
+        shift: [19.04, 8.39]
+        rotate: 165.60
+    nix-piece-purple:
+      <<: *icon
+      where:
+        ref: nix_logo_x_y
+        shift: *nix_logo_shift
+      adjust:
+        shift: [2.04, 20.79]
+        rotate: 225.60
+    nix-piece-red:
+      <<: *icon
+      where:
+        ref: nix_logo_x_y
+        shift: *nix_logo_shift
+      adjust:
+        shift: [-16.96, 12.28]
+        rotate: 285.60
+    front_text:
+      what: decoration/text
+      where:
+        ref: nix_logo_x_y
+        shift: *nix_logo_shift
+        rotate: -14
+      adjust:
+        shift:
+          - -6.5
+          - &text-shift-y -10
+      params:
+        text: *silk-text
+        justify: left
+    back_text:
+      what: decoration/text
+      where:
+        ref: nix_logo_x_y
+        shift: *nix_logo_shift
+        rotate: -14
+      adjust:
+        shift:
+          - 6.5
+          - *text-shift-y
+      params:
+        text: *silk-text
+        layer: B.SilkS
+        justify: left mirror
+
+    #` TRRS Connector
+    trrs_connector:
+      what: connectors/trrs-pj-320a-dual
+      params:
+        reverse: true
+        symmetric: false
+        drawing: false
+        A: VCC
+        B: GND
+        C: &i2c-scl P3
+        D: &i2c-sda P2
+      where:
+        ref: trrs_x_y
+        shift: *trrs_connector_shift
+      adjust.rotate: -90
+      adjust.shift:
+        - direction_R*( TRRSx/2 + 0.45 )
+        - direction_B*( TRRSy*0 + 1.15 )
+    trrs_side_jumper:
+      # For a I2C connection you need 2 pull up resistors that pull up the SDA and SCL lines.
+      # That is why I added this footprint, to solder on the resistors, one on each side.
+      what: jumpers/3-way
+      params.A: VCC
+      params.B: *i2c-sda
+      params.C: *i2c-scl
+      # params.size: 2.54
+      where:
+        ref: trrs_x_y
+        shift: *trrs_connector_shift
+      adjust.rotate: 0
+      adjust.shift: [direction_R*(1.75), 0]
+    route-P2-to-jumper-for-the-trrs-connector:
+      what: routing/trace
+      where:
+        ref: trrs_x_y
+        shift: *trrs_connector_shift
+      params:
+        side: *back-side
+        net: P3
+        points:
+          - start.x: &P2-to-jumper-start-x 1
+            start.y: &P2-to-jumper-start-y 3.3
+            end.x: &P2-to-jumper-middle-x 3
+            end.y: &P2-to-jumper-middle-y 0
+          - start.x: *P2-to-jumper-middle-x
+            start.y: *P2-to-jumper-middle-y
+            end.x: *P2-to-jumper-start-x
+            end.y: &P2-to-jumper-end-y -3.3
+    route-P3-to-jumper-for-the-trrs-connector:
+      what: routing/trace
+      where:
+        ref: trrs_x_y
+        shift: *trrs_connector_shift
+      params:
+        side: *frond-side
+        net: P2
+        points:
+          - start.x: &P3-to-jumper-start-x 4
+            start.y: *P2-to-jumper-start-y
+            end.x: *P2-to-jumper-middle-x
+            end.y: *P2-to-jumper-middle-y
+          - start.x: *P2-to-jumper-middle-x
+            start.y: *P2-to-jumper-middle-y
+            end.x: *P3-to-jumper-start-x
+            end.y: *P2-to-jumper-end-y
+    route-VCC-to-jumper-for-the-trrs-connector:
+      what: routing/trace
+      where:
+        ref: trrs_x_y
+        shift: *trrs_connector_shift
+      params:
+        side: *frond-side
+        net: VCC
+        points:
+          - start.x: &VCC-to-jumper-start-x -4
+            start.y: 1
+            end.x: &VCC-to-jumper-middle-x -3
+            end.y: &VCC-to-jumper-middle-y 0
+          - start.x: *VCC-to-jumper-start-x
+            start.y: -1
+            end.x: *VCC-to-jumper-middle-x
+            end.y: *VCC-to-jumper-middle-y
+          - start.x: *VCC-to-jumper-middle-x
+            start.y: *VCC-to-jumper-middle-y
+            end.x: 0.5
+            end.y: 0
+    route-GND-to-GND-for-the-trrs-connector:
+      what: routing/trace
+      where:
+        ref: trrs_x_y
+        shift: *trrs_connector_shift
+      params:
+        side: *frond-side
+        net: GND
+        points:
+          - start.x: &GND-to-GND-start-x -3.7
+            start.y: *P2-to-jumper-start-y
+            end.x: &GND-to-GND-middle-x -6.3
+            end.y: &GND-to-GND-middle-start-y 3.3
+          - start.x: *GND-to-GND-middle-x
+            start.y: *GND-to-GND-middle-start-y
+            end.x: *GND-to-GND-middle-x
+            end.y: &GND-to-GND-middle-end-y -3.3
+          - start.x: *GND-to-GND-middle-x
+            start.y: *GND-to-GND-middle-end-y
+            end.x: *GND-to-GND-start-x
+            end.y: *P2-to-jumper-end-y
+
+    #` Keys
+    choc-hotswap:
+      what: choc
+      where: *any_place_where_a_key_is
+      params:
+        keycaps: true
+        hotswap: true
+        reverse: true
+        from: "{{col_net}}"
+        to: "{{name}}"
+    choc-non-hotswap:
+      what: choc
+      where: *any_place_where_a_key_is
+      params:
+        keycaps: true
+        hotswap: false
+        reverse: true
+        from: "{{col_net}}"
+        to: "{{name}}"
+      adjust:
+        rotate: 180
+    via-top:
+      what: routing/node
+      where: *any_place_where_a_key_is
+      params:
+        net: "{{name}}"
+      adjust:
+        shift:
+          - &via-top-shift-x 0
+          - &via-top-shift-y -3.5
+    via-middle:
+      what: routing/node
+      where: *any_place_where_a_key_is
+      params:
+        net: "{{col_net}}"
+      adjust:
+        shift:
+          - &via-middle-shift-x 0
+          - &via-middle-shift-y 3.5
+    via-bottom:
+      what: routing/node
+      where: *any_key_expect_the_outer_ones
+      params:
+        net: "{{row_net}}"
+      adjust:
+        shift:
+          - &via-bottom-shift-x 0
+          - &via-bottom-shift-y -8.5
+    diode:
+      what: diodes/sod-123w
+      where: *any_place_where_a_key_is
+      params:
+        from: "{{name}}"
+        to: "{{row_net}}"
+      adjust:
+        shift: [4.8, -7]
+        rotate: 180
+    # This is where we route up every thing on a single key
+    # We can do this bc we know where things on an individual
+    # keys is. We can not do inter key routes this way as
+    # they are dynamically located, this is all in respect to
+    # the center of the key.
+    #` Top via
+    route-from-top-via-to-higher-frond-pad:
+      what: routing/trace
+      where: *any_place_where_a_key_is
+      params:
+        side: *back-side
+        net: "{{name}}"
+        points:
+          - start: { x: *via-top-shift-x, y: *via-top-shift-y }
+            end:
+              x: &route-from-top-via-to-higher-pad-stop-1-x-frond -1
+              y: &route-from-top-via-to-higher-pad-stop-1-y -4
+          - start:
+              x: *route-from-top-via-to-higher-pad-stop-1-x-frond
+              y: *route-from-top-via-to-higher-pad-stop-1-y
+            end:
+              y: &route-from-top-via-to-higher-pad-stop-2-y -6
+              x: &route-from-top-via-to-higher-pad-stop-2-x-left -3
+          - start:
+              x: *route-from-top-via-to-higher-pad-stop-1-x-frond
+              y: *route-from-top-via-to-higher-pad-stop-1-y
+            end:
+              x: &route-from-top-via-to-higher-pad-stop-3-x-left -5
+              y: &route-from-top-via-to-higher-pad-stop-3-y 4
+    route-from-top-via-to-higher-back-pad:
+      what: routing/trace
+      where: *any_place_where_a_key_is
+      params:
+        side: *frond-side
+        net: "{{name}}"
+        points:
+          - start: { x: *via-top-shift-x, y: *via-top-shift-y }
+            end:
+              x: &route-from-top-via-to-higher-pad-stop-1-x-back 1
+              y: *route-from-top-via-to-higher-pad-stop-1-y
+          - start:
+              x: *route-from-top-via-to-higher-pad-stop-1-x-back
+              y: *route-from-top-via-to-higher-pad-stop-1-y
+            end:
+              y: *route-from-top-via-to-higher-pad-stop-2-y
+              x: &route-from-top-via-to-higher-pad-stop-2-x-right 3
+          - start:
+              x: *route-from-top-via-to-higher-pad-stop-1-x-back
+              y: *route-from-top-via-to-higher-pad-stop-1-y
+            end:
+              x: &route-from-top-via-to-higher-pad-stop-3-x-right 5
+              y: *route-from-top-via-to-higher-pad-stop-3-y
+    #` Middle via
+    route-from-middle-via-to-lower-frond-pad:
+      what: routing/trace
+      where: *any_place_where_a_key_is
+      params:
+        side: *frond-side
+        net: "{{col_net}}"
+        points:
+          - start: { x: *via-middle-shift-x, y: *via-middle-shift-y }
+            end:
+              x: &route-from-middle-via-to-lower-pad-stop-1-x-frond -5
+              y: &route-from-middle-via-to-lower-pad-stop-1-y -1.5
+          - start:
+              x: *route-from-middle-via-to-lower-pad-stop-1-x-frond
+              y: *route-from-middle-via-to-lower-pad-stop-1-y
+            end:
+              x: &route-from-middle-via-to-lower-pad-stop-2-x-frond -7
+              y: &route-from-middle-via-to-lower-pad-stop-2-y -1.5
+          - start:
+              x: *route-from-middle-via-to-lower-pad-stop-2-x-frond
+              y: *route-from-middle-via-to-lower-pad-stop-2-y
+            end:
+              y: &route-from-middle-via-to-lower-pad-stop-3-y -4
+              x: -8.1
+    route-from-middle-via-to-lower-back-pad:
+      what: routing/trace
+      where: *any_place_where_a_key_is
+      params:
+        side: *back-side
+        net: "{{col_net}}"
+        points:
+          - start: { x: *via-middle-shift-x, y: *via-middle-shift-y }
+            end:
+              x: &route-from-middle-via-to-lower-pad-stop-1-x-back 5
+              y: *route-from-middle-via-to-lower-pad-stop-1-y
+          - start:
+              x: *route-from-middle-via-to-lower-pad-stop-1-x-back
+              y: *route-from-middle-via-to-lower-pad-stop-1-y
+            end:
+              x: &route-from-middle-via-to-lower-pad-stop-2-x-back 7
+              y: *route-from-middle-via-to-lower-pad-stop-2-y
+          - start:
+              x: *route-from-middle-via-to-lower-pad-stop-2-x-back
+              y: *route-from-middle-via-to-lower-pad-stop-2-y
+            end:
+              y: *route-from-middle-via-to-lower-pad-stop-3-y
+              x: 8.1
+    route-from-middle-via-to-lower-hole:
+      what: routing/trace
+      where: *any_place_where_a_key_is
+      params:
+        side: *back-side
+        net: "{{col_net}}"
+        points:
+          - start: { x: *via-middle-shift-x, y: *via-middle-shift-y }
+            end:
+              x: &lower-hole-x 0
+              y: &lower-hole-y 6
+          - start: { x: *lower-hole-x, y: *lower-hole-y }
+            end: { y: 7, x: 3.25 }
+    #` Lower Via
+    route-from-edge-to-bottom-via:
+      what: routing/trace
+      where: *any_key_expect_the_outer_ones
+      params:
+        side: *frond-side
+        net: "{{row_net}}"
+        points:
+          - start: { y: &lower-via-route-start-y 8.5, x: -7.5 }
+            end: { y: *lower-via-route-start-y, x: *via-bottom-shift-x }
+    route-from-bottom-via-to-diode:
+      what: routing/trace
+      where: *any_key_expect_the_outer_ones
+      params:
+        side: *back-side
+        net: "{{row_net}}"
+        points:
+          - start:
+              x: *via-bottom-shift-x
+              y: *lower-via-route-start-y
+            end:
+              x: &to-lower-diode-stop-1-x 6.25
+              y: *lower-via-route-start-y
+          - start:
+              x: *to-lower-diode-stop-1-x
+              y: *lower-via-route-start-y
+            end:
+              x: *to-lower-diode-stop-1-x
+              y: 7
+    #` INTER KEY ROUTES : Top pads to upper key
+    route-from-higher-frond-pad-to-upper-key:
+      what: routing/trace
+      where: *main_key_matrix_except_top
+      params:
+        side: *back-side
+        net: "{{name}}"
+        points:
+          - start:
+              y: *route-from-top-via-to-higher-pad-stop-2-y
+              x: *route-from-top-via-to-higher-pad-stop-2-x-left
+            end:
+              y: &start-inter-key-collum-y -8.5
+              x: &route-to-neighboring-key-x-left -4.7
+    route-from-higher-back-pad-to-upper-key:
+      what: routing/trace
+      where: *main_key_matrix_except_top
+      params:
+        side: *frond-side
+        net: "{{name}}"
+        points:
+          - start:
+              y: *route-from-top-via-to-higher-pad-stop-2-y
+              x: *route-from-top-via-to-higher-pad-stop-2-x-right
+            end:
+              y: *start-inter-key-collum-y
+              x: &route-to-neighboring-key-x-right 4.7
+    #` INTER KEY ROUTES : higher holes to lower key
+    route-from-higher-hole-pad-to-lower-key-left:
+      what: routing/trace
+      where: *main_key_matrix_except_bottom
+      params:
+        side: *back-side
+        net: "{{name}}"
+        points:
+          - start:
+              x: *route-from-top-via-to-higher-pad-stop-3-x-left
+              y: *route-from-top-via-to-higher-pad-stop-3-y
+            end:
+              x: *route-to-neighboring-key-x-left
+              y: &start-inter-key-collum-y-lower 8.5
+    route-from-higher-hole-pad-to-lower-key-right:
+      what: routing/trace
+      where: *main_key_matrix_except_bottom
+      params:
+        side: *frond-side
+        net: "{{name}}"
+        points:
+          - start:
+              x: *route-from-top-via-to-higher-pad-stop-3-x-right
+              y: *route-from-top-via-to-higher-pad-stop-3-y
+            end:
+              x: *route-to-neighboring-key-x-right
+              y: *start-inter-key-collum-y-lower
+# ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
