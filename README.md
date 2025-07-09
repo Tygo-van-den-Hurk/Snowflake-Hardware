@@ -32,7 +32,7 @@
   <a href="https://github.com/Tygo-van-den-Hurk/keyboard/pulse">
     <img src="https://img.shields.io/github/created-at/Tygo-van-den-Hurk/keyboard?style=flat" alt="created at badge" />
   </a>
-  <a href="https://github.com/Tygo-van-den-Hurk/keyboard/release">
+  <a href="https://github.com/Tygo-van-den-Hurk/keyboard/releases">
     <img src="https://img.shields.io/github/release/Tygo-van-den-Hurk/keyboard?style=flat&display_name=release" alt="newest release" />
   </a>
   <a href="https://github.com/Tygo-van-den-Hurk/keyboard/">

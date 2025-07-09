@@ -111,6 +111,6 @@ src
 └── config.yaml
 ```
 
-If you need any footprint that this repository is missing, you can find it's JavaScript file, and add it to the `./src/footprints/` directory. There are a lot of footprints you can use. Just make sure it's well tested, because a bad footprint could technically destroy your microcontroller or other components. 
+If you need any footprint that this repository is missing, you can find it's JavaScript file, and add it to the `./src/footprints/` directory. There are a lot of footprints you can use. Just make sure it's well tested, because a bad footprint could technically destroy your microcontroller or other components.
 
 Adding your own is not as hard. Within 2 hours I had my own custom footprint I needed. All you need is to reverse engineer the existing components.

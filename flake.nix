@@ -99,7 +99,7 @@
                 set -e
                 ${pkgs.nodemon}/bin/nodemon \
                   --exec "nix run .#ergogen" \
-                  --watch "./hardware/src/**/*.*" \
+                  --watch "./src/**/*.*" \
                   --ext "yaml,yml,js"
               ''
             );
@@ -112,7 +112,7 @@
                 set -e
                 ${pkgs.nodemon}/bin/nodemon \
                   --exec "nix run .#update-pcb" \
-                  --watch "./hardware/src/**/*.*" \
+                  --watch "./src/**/*.*" \
                   --ext "yaml,yml,js"
               ''
             );
@@ -144,49 +144,14 @@
 
         packages = rec {
 
-          default = pkgs.stdenv.mkDerivation rec {
-            name = "pcb";
-            src = ./.;
-            installPhase = ''
-              runHook preInstall
-
-              mkdir --parents $out
-              cp --recursive ${hardware} $out/hardware
-              cp --recursive ${software} $out/software
-
-              runHook postInstall
-            '';
-          };
-
-          #| ---------------------------------------------- Software ----------------------------------------------- |#
-
-          software = pkgs.stdenv.mkDerivation rec {
-            name = "pcb";
-            src = ./software;
-
-            buildPhase = ''
-              runHook preBuild
-
-              # ...
-
-              runHook postBuild
-            '';
-
-            installPhase = ''
-              runHook preInstall
-
-              mkdir --parents $out
-
-              runHook postInstall
-            '';
-          };
+          default = hardware;
 
           #| ---------------------------------------------- Hardware ----------------------------------------------- |#
 
           # all the hardware files, excluding post processing
           hardware-raw = pkgs.stdenv.mkDerivation rec {
             name = "pcb";
-            src = ./hardware/src;
+            src = ./src;
 
             buildPhase = ''
               runHook preBuild
@@ -199,8 +164,8 @@
             installPhase = ''
               runHook preInstall
 
-              mkdir --parents $out
-              cp --recursive output/* $out
+              mkdir --parents $out/share
+              cp --recursive output/* $out/share
 
               runHook postInstall
             '';
@@ -209,24 +174,24 @@
           # all the hardware files, including post processing
           hardware = pkgs.stdenv.mkDerivation rec {
             name = "pcb";
-            src = ./hardware/src;
+            src = ./src;
             installPhase = ''
               runHook preInstall
 
-              mkdir --parents $out/cases
-              cp --recursive ${cases}/* $out/cases
+              mkdir --parents $out/share/cases
+              cp --recursive ${cases}/share/* $out/share/cases
 
-              mkdir --parents $out/pcbs
-              cp --recursive ${pcbs}/* $out/pcbs
+              mkdir --parents $out/share/pcbs
+              cp --recursive ${pcbs}/share/* $out/share/pcbs
 
-              mkdir --parents $out/outlines
-              cp --recursive ${outlines}/* $out/outlines
+              mkdir --parents $out/share/outlines
+              cp --recursive ${outlines}/share/* $out/share/outlines
 
-              mkdir --parents $out/points
-              cp --recursive ${points}/* $out/points
+              mkdir --parents $out/share/points
+              cp --recursive ${points}/share/* $out/share/points
 
-              mkdir --parents $out/source
-              cp --recursive ${hardware-raw}/source/* $out/source
+              mkdir --parents $out/share/source
+              cp --recursive ${hardware-raw}/share/source/* $out/share/source
 
               runHook postInstall
             '';
@@ -234,12 +199,12 @@
 
           pcbs = pkgs.stdenv.mkDerivation rec {
             name = "pcb";
-            src = ./hardware/src;
+            src = ./src;
             installPhase = ''
               runHook preInstall
 
-              mkdir --parents $out
-              cp --recursive ${hardware-raw}/pcbs/* $out
+              mkdir --parents $out/share
+              cp --recursive ${hardware-raw}/share/pcbs/* $out/share
 
               runHook postInstall
             '';
@@ -247,14 +212,14 @@
 
           outlines = pkgs.stdenv.mkDerivation rec {
             name = "pcb";
-            src = ./hardware/src;
+            src = ./src;
 
             buildPhase = ''
               runHook preBuild
 
               root="$(pwd)"
               mkdir --parents $root/outlines
-              for outline in ${hardware-raw}/outlines/*; do
+              for outline in ${hardware-raw}/share/outlines/*; do
                 if [ -f "$outline" ]; then
                   name=$(basename "$outline" | sed 's/\..*//')
                   if [[ "$name" == _* ]]; then
@@ -274,8 +239,8 @@
             installPhase = ''
               runHook preInstall
 
-              mkdir --parents $out
-              cp --recursive $root/outlines/* $out
+              mkdir --parents $out/share
+              cp --recursive $root/outlines/* $out/share
 
               runHook postInstall
             '';
@@ -283,12 +248,12 @@
 
           points = pkgs.stdenv.mkDerivation rec {
             name = "pcb";
-            src = ./hardware/src;
+            src = ./src;
             installPhase = ''
               runHook preInstall
 
-              mkdir --parents $out
-              cp --recursive ${hardware-raw}/points/* $out
+              mkdir --parents $out/share
+              cp --recursive ${hardware-raw}/share/points/* $out/share
 
               runHook postInstall
             '';
@@ -296,7 +261,7 @@
 
           cases = pkgs.stdenv.mkDerivation rec {
             name = "pcb";
-            src = ./hardware/src;
+            src = ./src;
 
             buildPhase = ''
               runHook preBuild
@@ -309,7 +274,7 @@
 
               root="$(pwd)/cases"
               mkdir --parents $root
-              for case in ${hardware-raw}/cases/*; do
+              for case in ${hardware-raw}/share/cases/*; do
 
                 echo "making sure it is a file..."
                 if [ ! -f "$case" ]; then
@@ -367,8 +332,8 @@
             installPhase = ''
               runHook preInstall
 
-              mkdir --parents $out
-              cp --recursive $root/* $out
+              mkdir --parents $out/share
+              cp --recursive $root/* $out/share
 
               runHook postInstall
             '';
