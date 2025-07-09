@@ -36,6 +36,7 @@ To build the keyboard you require the following physical components:
 | 2 | 0805 SMD Resistor 10k | RC0805FR-0710KL | Any resistor between 2.2k and 10k will work, with 10k being optimal. |
 | 36 | choc switches | - | Any choc switch will work, pick your favorite. |
 | 36 | choc key caps | - | Any choc key cap will work, pick your favorite. |
+| 36 | choc hot swap sockets | - | Any choc hot swap socket will work, pick the cheapest. |
 | 36 | Diodes | 1N4148W Signal Diode | These are the exact ones I got, but I think that a lot of diodes will work. |
 | 2 | RP2040 Pro Micro | - | Buying any other pro micro based pro micro will require changing the firmware yourself. |
 | 6 | M2 inserts and screws | - | to secure your PCB into the case. |
@@ -65,7 +66,7 @@ Make sure to line up the diode' line with the closed line on the PCB as seen in 
 > [!CAUTION]
 > This step is also hard like the last one for beginners to soldering. Don't be disheartened. I was a beginner to and was able to do it too.
 
-Next solder the resistors. The $10k\\Omega$ ones go onto the jumper below the microcontroller, and the $4.7k\\Omega$ ones go below the TRRS connector.
+Next solder the resistors. The $10k\Omega$ ones go onto the jumper below the microcontroller, and the $4.7k\Omega$ ones go below the TRRS connector.
 
 <img alt="A picture of how the resistors need to be soldered." src="../../images/png/resistor-placement.png" width="100%">
 
@@ -93,7 +94,7 @@ To solder the micro controller, first connect the jumpers on the sides. Then add
 
 Next add the headers and place the micro controller on top of that. Then solder it into place. The resulting thing should now look something like this:
 
-![A picture of the final result.](../../images/ewfjwefj)
+![A picture of the final result.](../../images/)
 
 ## Firmware
 
