@@ -88,7 +88,7 @@ header: ""
 footer: ""
 
 change-title-escapes: '\<*_&'
-change-template: "- ([#$NUMBER]($URL)) $TITLE by [@$AUTHOR](https://github.com/$AUTHOR)"
+change-template: "- #$NUMBER $TITLE by @$AUTHOR"
 no-changes-template: "- No changes"
 category-template: |
   ## $TITLE
