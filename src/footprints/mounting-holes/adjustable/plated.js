@@ -1,10 +1,10 @@
-// Copyright (c) 2023 Marco Massarelli
+// Copyright (c) 2023 Tygo van den Hurk
 //
 // SPDX-License-Identifier: CC-BY-NC-SA-4.0
 //
 // To view a copy of this license, visit http://creativecommons.org/licenses/by-nc-sa/4.0/
 //
-// Author: @infused-kim + @ceoloide improvements
+// Author: @infused-kim + @ceoloide + @Tygo-van-den-Hurk
 //
 // Description:
 //  A simple mounting hole with plated rim.
@@ -23,10 +23,16 @@
 //      The vertical height of an oval hole, in mm.
 //    include_courtyard: default is true
 //      if true it will include the part courtyard
+//    locked: default is true
+//      if true it will lock the part
 //
 //  @ceoloide's improvements:
 //    - Upgrade to KiCad 8
 //    - Minor footprint restructure
+//
+//  @Tygo-van-den-Hurk's improvements:
+//    - Added locked parameter
+//
 
 module.exports = {
   params: {
@@ -36,6 +42,7 @@ module.exports = {
     drill: 2.2,
     drill_y: 0,
     include_courtyard: true,
+    locked: true,
   },
   body: (p) => {
     if (p.drill_y == 0) {
@@ -50,9 +57,10 @@ module.exports = {
     const courtyard_y = size_y / 2 + courtyard_offset;
 
     const top = `
-  (footprint "ceoloide:mounting_hole_plated"
-    (layer "${p.side}.Cu")
-    ${p.at}
+  (footprint "mounting_hole_plated" ${p.at}
+
+    ${p.locked ? "(locked yes)" : ""}
+
     (property "Reference" "${p.ref}"
       (at 0 3 ${p.r})
       (layer "${p.side}.SilkS")

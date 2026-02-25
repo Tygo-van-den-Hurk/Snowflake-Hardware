@@ -1,10 +1,10 @@
-// Copyright (c) 2023 Marco Massarelli
+// Copyright (c) 2023 Tygo van den Hurk
 //
 // SPDX-License-Identifier: MIT
 //
 // To view a copy of this license, visit https://opensource.org/license/mit/
 //
-// Author: @ceoloide
+// Author: @ceoloide + @Tygo-van-den-Hurk
 //
 // Description:
 //  A non-plated, mechanical through-hole to be used for screws, standoffs or
@@ -18,6 +18,12 @@
 //      the size of the pad around the hole
 //    hole_drill: default is 2.2mm for M2 screws
 //      the size of the hole to drill
+//    locked: default is true
+//      if true it will lock the part
+//
+//  @Tygo-van-den-Hurk's improvements:
+//    - Added locked parameter
+//
 
 module.exports = {
   params: {
@@ -25,11 +31,13 @@ module.exports = {
     side: "F",
     hole_size: "2.2",
     hole_drill: "2.2",
+    locked: true,
   },
   body: (p) => `
-  (footprint "ceoloide:mounting_hole_npth"
-    (layer "${p.side}.Cu")
-    ${p.at}
+  (footprint "ceoloide:mounting_hole_npth" ${p.at}
+
+    ${p.locked ? "(locked yes)" : ""}
+
     (property "Reference" "${p.ref}"
       (at 0 2.55 ${p.r})
       (layer "${p.side}.SilkS")

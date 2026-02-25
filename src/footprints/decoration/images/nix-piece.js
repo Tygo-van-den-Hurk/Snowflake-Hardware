@@ -1,5 +1,9 @@
 module.exports = {
-  params: { scale: 1 },
+  params: {
+    scale: 1,
+    silks: false,
+    solid: true,
+  },
   body: (p) => {
     const points = [
       [449.72015661086516, -420.51080072470063],
@@ -146,23 +150,39 @@ module.exports = {
     ]
       .map(([x, y]) => `(xy ${p.xy(x * p.scale, y * p.scale)})`)
       .join(" ");
-    return `
-        (gr_poly
-          (pts${points})
-          (stroke (width 0) (type solid)) (fill solid) (layer "F.Mask")
-        )
-        (gr_poly
-          (pts${points})
-          (stroke (width 0) (type solid)) (fill solid) (layer "F.Cu")
-        )
-        (gr_poly
-          (pts${points})
-          (stroke (width 0) (type solid)) (fill solid) (layer "B.Mask")
-        )
-        (gr_poly
-          (pts${points})
-          (stroke (width 0) (type solid)) (fill solid) (layer "B.Cu")
-        )
+
+    const solid = p.solid
+      ? "(width 0) (type solid) ) (fill solid)"
+      : "(width 1) )";
+
+    if (p.silks)
+      return `
+      (gr_poly
+        (pts${points})
+        (stroke ${solid} (layer "F.SilkS")
+      )
+      (gr_poly
+        (pts${points})
+        (stroke ${solid} (layer "B.SilkS")
+      )
     `;
+    else
+      return `
+      (gr_poly
+        (pts${points})
+        (stroke ${solid} (layer "F.Mask")
+      )
+      (gr_poly
+        (pts${points})
+        (stroke ${solid} (layer "F.Cu")
+      )
+      (gr_poly
+        (pts${points})
+        (stroke ${solid} (layer "B.Mask")
+      )
+      (gr_poly
+        (pts${points})
+        (stroke ${solid} (layer "B.Cu")
+      )`;
   },
 };

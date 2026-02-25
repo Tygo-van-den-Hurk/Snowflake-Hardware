@@ -39,6 +39,7 @@ module.exports = {
     reverse: false,
     symmetric: false,
     stabilizers: true,
+    swap: false,
     drawing: true,
     A: undefined,
     B: undefined,
@@ -52,9 +53,9 @@ module.exports = {
       );
     }
 
-    if (p.symmetric && !p.reverse) {
+    if (p.symmetric && !(p.reverse || p.symmetric)) {
       throw new Error(
-        "This footprint can only be symmetric if and only if reverse is also true",
+        "This footprint can only be symmetric if and only if reverse or symmetric is also true",
       );
     }
 
@@ -91,28 +92,28 @@ module.exports = {
         (pad "" np_thru_hole circle (at ${def_pos} 1.6) (size 1.5 1.5) (drill 1.5) (layers *.Cu *.Mask))`;
     }
 
-    function pins(def_neg, def_pos) {
+    function pins(def_neg, def_pos, swap) {
       return `
         (pad 1 thru_hole oval (at ${def_neg} 11.3 ${p.rot}) (size 1.6 2.2) (drill oval 0.9 1.5) (layers *.Cu *.Mask) ${p.A.str})
         (pad 2 thru_hole oval (at ${def_pos} 10.2 ${p.rot}) (size 1.6 2.2) (drill oval 0.9 1.5) (layers *.Cu *.Mask) ${p.B.str})
-        (pad 3 thru_hole oval (at ${def_pos} 6.2 ${p.rot}) (size 1.6 2.2) (drill oval 0.9 1.5) (layers *.Cu *.Mask) ${p.C.str})
-        (pad 4 thru_hole oval (at ${def_pos} 3.2 ${p.rot}) (size 1.6 2.2) (drill oval 0.9 1.5) (layers *.Cu *.Mask) ${p.D.str})
+        (pad 3 thru_hole oval (at ${def_pos} 6.2 ${p.rot}) (size 1.6 2.2) (drill oval 0.9 1.5) (layers *.Cu *.Mask) ${swap ? p.C.str : p.D.str})
+        (pad 4 thru_hole oval (at ${def_pos} 3.2 ${p.rot}) (size 1.6 2.2) (drill oval 0.9 1.5) (layers *.Cu *.Mask) ${swap ? p.D.str : p.C.str})
       `;
     }
     if (p.reverse & p.symmetric) {
       return `
         ${standard}
         ${stabilizers("-2.3")}
-        ${pins("0", "-4.6")}
-        ${pins("-4.6", "0")})
+        ${pins("0", "-4.6", false)}
+        ${pins("-4.6", "0", p.swap)})
       `;
     } else if (p.reverse) {
       return `
           ${standard}
           ${stabilizers("-2.3")}
           ${stabilizers("0")}
-          ${pins("-2.3", "2.3")}
-          ${pins("0", "-4.6")})
+          ${pins("-2.3", "2.3", false)}
+          ${pins("0", "-4.6", p.swap)})
         `;
     } else {
       return `

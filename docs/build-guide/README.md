@@ -66,7 +66,7 @@ Make sure to line up the diode' line with the closed line on the PCB as seen in 
 > [!CAUTION]
 > This step is also hard like the last one for beginners to soldering. Don't be disheartened. I was a beginner to and was able to do it too.
 
-Next solder the resistors. The $10k\Omega$ ones go onto the jumper below the microcontroller, and the $4.7k\Omega$ ones go below the TRRS connector.
+Next solder the resistors. The $10k\\Omega$ ones go onto the jumper below the microcontroller, and the $4.7k\\Omega$ ones go below the TRRS connector.
 
 <img alt="A picture of how the resistors need to be soldered." src="../../images/png/resistor-placement.png" width="100%">
 

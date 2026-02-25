@@ -18,21 +18,24 @@ module.exports = {
     P14: { type: "net", value: "P14" },
     P16: { type: "net", value: "P16" },
     P10: { type: "net", value: "P10" },
-    P1: { type: "net", value: "P1" },
-    P0: { type: "net", value: "P0" },
-    P2: { type: "net", value: "P2" },
-    P3: { type: "net", value: "P3" },
-    P4: { type: "net", value: "P4" },
-    P5: { type: "net", value: "P5" },
-    P6: { type: "net", value: "P6" },
-    P7: { type: "net", value: "P7" },
-    P8: { type: "net", value: "P8" },
-    P9: { type: "net", value: "P9" },
+    P01: { type: "net", value: "P01" },
+    P00: { type: "net", value: "P00" },
+    P02: { type: "net", value: "P02" },
+    P03: { type: "net", value: "P03" },
+    P04: { type: "net", value: "P04" },
+    P05: { type: "net", value: "P05" },
+    P06: { type: "net", value: "P06" },
+    P07: { type: "net", value: "P07" },
+    P08: { type: "net", value: "P08" },
+    P09: { type: "net", value: "P09" },
+    locked: true,
   },
   body: (p) => {
     return `
             (module ProMicro (layer F.Cu) (tedit 6135B927)
             ${p.at /* parametric position */}
+
+            ${p.locked ? "(locked yes)" : ""}
 
             ${"" /* footprint description, tags and reference */}
             (descr "Solder-jumper reversible Pro Micro footprint")

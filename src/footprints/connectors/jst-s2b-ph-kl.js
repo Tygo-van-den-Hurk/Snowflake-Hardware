@@ -1,7 +1,7 @@
 module.exports = {
   params: {
-    pos: { type: "net", value: "pos" },
-    neg: { type: "net", value: "neg" },
+    positive: { type: "net", value: "POS" },
+    negative: { type: "net", value: "NEG" },
   },
   body: (p) => `
         (footprint "Connector_JST:JST_PH_S2B-PH-K_1x02_P2.00mm_Horizontal"
@@ -10,10 +10,10 @@ module.exports = {
             (tags "connector JST PH top entry")
             (attr through_hole)
             (fp_text reference "${p.ref}" (at 1 -2.55 ${p.rot}) (layer "F.SilkS") ${p.ref_hide}
-                (effects (font (size 1 1) (thickness 0.15)))
+              (effects (font (size 1 1) (thickness 0.15)))
             )
             (fp_text value "" (at 1 7.45 ${p.rot}) (layer "F.Fab") hide
-                (effects (font (size 1 1) (thickness 0.15)))
+              (effects (font (size 1 1) (thickness 0.15)))
             )
             (fp_line (start -2.06 -1.46) (end -2.06 6.36) (stroke (width 0.12) (type solid)) (layer "F.SilkS"))
             (fp_line (start -2.06 0.14) (end -1.14 0.14) (stroke (width 0.12) (type solid)) (layer "F.SilkS"))
@@ -82,8 +82,8 @@ module.exports = {
             (fp_line (start 3.95 -1.35) (end 3.25 -1.35) (stroke (width 0.1) (type solid)) (layer "B.Fab"))
             (fp_line (start 3.95 6.25) (end 3.95 -1.35) (stroke (width 0.1) (type solid)) (layer "B.Fab"))
 
-            (pad "1" thru_hole roundrect (at 0 0 ${p.rot}) (size 1.2 1.75) (drill 0.75) (layers "*.Cu" "*.Mask") (roundrect_rratio 0.208333) ${p.pos.str})
-            (pad "2" thru_hole oval (at 2 0 ${p.rot}) (size 1.2 1.75) (drill 0.75) (layers "*.Cu" "*.Mask") ${p.neg.str})
+            (pad "1" thru_hole roundrect (at 0 0 ${p.rot}) (size 1.2 1.75) (drill 0.75) (layers "*.Cu" "*.Mask") (roundrect_rratio 0.208333) ${p.positive.str})
+            (pad "2" thru_hole oval (at 2 0 ${p.rot}) (size 1.2 1.75) (drill 0.75) (layers "*.Cu" "*.Mask") ${p.negative.str})
         )
     `,
 };

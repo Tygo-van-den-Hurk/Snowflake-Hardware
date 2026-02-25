@@ -267,6 +267,14 @@
       },
       {
         "netclass": "Default",
+        "pattern": "B+"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "B-"
+      },
+      {
+        "netclass": "Default",
         "pattern": "RAW"
       },
       {
@@ -315,43 +323,191 @@
       },
       {
         "netclass": "Default",
-        "pattern": "P1"
+        "pattern": "P01"
       },
       {
         "netclass": "Default",
-        "pattern": "P0"
+        "pattern": "P00"
       },
       {
         "netclass": "Default",
-        "pattern": "P2"
+        "pattern": "P02"
       },
       {
         "netclass": "Default",
-        "pattern": "P3"
+        "pattern": "P03"
       },
       {
         "netclass": "Default",
-        "pattern": "P4"
+        "pattern": "P04"
       },
       {
         "netclass": "Default",
-        "pattern": "P5"
+        "pattern": "P05"
       },
       {
         "netclass": "Default",
-        "pattern": "P6"
+        "pattern": "P06"
       },
       {
         "netclass": "Default",
-        "pattern": "P7"
+        "pattern": "P07"
       },
       {
         "netclass": "Default",
-        "pattern": "P8"
+        "pattern": "P08"
       },
       {
         "netclass": "Default",
-        "pattern": "P9"
+        "pattern": "P09"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_24"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_1"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_23"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_2"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_22"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_3"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_21"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_4"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_20"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_5"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_19"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_6"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_18"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_7"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_17"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_8"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_16"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_9"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_15"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_10"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_14"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_11"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_13"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!nano1_12"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!view1_1"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!view1_2"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!view1_3"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!view1_4"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "nice!view1_5"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "ssd13061_1"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "ssd13061_2"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "ssd13061_3"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "ssd13061_4"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "D1"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "D0"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "I0"
+      },
+      {
+        "netclass": "Default",
+        "pattern": "I1"
       },
       {
         "netclass": "Default",

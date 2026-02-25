@@ -3,10 +3,14 @@ module.exports = {
     designator: "D",
     from: { type: "net", value: "from" },
     to: { type: "net", value: "to" },
+    locked: true,
   },
   body: (p) => `
         (footprint "Diode_SMD:Nexperia_CFP3_SOD-123W"
             ${p.at}
+
+            ${p.locked ? "(locked yes)" : ""}
+
             (descr "Nexperia CFP3 (SOD-123W), https://assets.nexperia.com/documents/outline-drawing/SOD123W.pdf")
             (tags "CFP3 SOD-123W")
             (attr smd)

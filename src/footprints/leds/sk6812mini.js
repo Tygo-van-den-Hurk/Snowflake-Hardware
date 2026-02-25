@@ -6,10 +6,14 @@ module.exports = {
     cutout: false,
     VCC: { type: "net", value: "VCC" },
     GND: { type: "net", value: "GND" },
+    locked: true,
   },
   body: (p) => `
         (module WS2812B
             ${p.at /* parametric position */}
+
+            ${p.locked ? "(locked yes)" : ""}
+
             ${"" /* footprint reference */}
             (fp_text reference "${p.ref}" (at 0 0) (layer F.SilkS) ${p.ref_hide} (effects (font (size 1.27 1.27) (thickness 0.15))))
             (fp_text value "" (at 0 0) (layer F.SilkS) hide (effects (font (size 1.27 1.27) (thickness 0.15))))

@@ -67,7 +67,7 @@
               pkgs.writeShellScript "ergogen" ''
                 set -e
 
-                root="$(git rev-parse --show-toplevel)/hardware"
+                root="$(git rev-parse --show-toplevel)"
 
                 src="$root/src"
                 [ -d $src ] && mkdir --parents $src
@@ -75,7 +75,11 @@
                 out="$root/output"
                 [ -d $out ] && mkdir --parents $out
 
-                ${packages.ergogen}/bin/ergogen --debug --clean $src --output $out
+                if ! ${packages.ergogen}/bin/ergogen --debug --clean $src --output $out; then
+                  echo ""
+                  ${pkgs.yamllint}/bin/yamllint --no-warnings $src/config.yaml
+                  exit 1
+                fi
               ''
             );
           };
@@ -86,7 +90,7 @@
               pkgs.writeShellScript "update-pcb" ''
                 set -e
                 nix run .#ergogen
-                root="$(git rev-parse --show-toplevel)/hardware"
+                root="$(git rev-parse --show-toplevel)"
                 cp $root/output/pcbs/* $root/kicad/
               ''
             );
