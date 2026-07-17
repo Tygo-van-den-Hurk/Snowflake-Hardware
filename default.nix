@@ -2,10 +2,23 @@
   (
     let
       lock = builtins.fromJSON (builtins.readFile ./flake.lock);
+      node = lock.nodes.flake-compat.locked;
+
+      sha256 = node.narHash;
+      inherit (node) owner;
+      inherit (node) repo;
+      inherit (node) rev;
+      inherit (node) type;
+
+      url =
+        if type == "github" then
+          "https://github.com/${owner}/${repo}/archive/${rev}.tar.gz"
+        else
+          throw "Unknown URL type: ${type}";
     in
     fetchTarball {
-      url = "https://github.com/edolstra/flake-compat/archive/${lock.nodes.flake-compat.locked.rev}.tar.gz";
-      sha256 = lock.nodes.flake-compat.locked.narHash;
+      inherit url;
+      inherit sha256;
     }
   )
   {
