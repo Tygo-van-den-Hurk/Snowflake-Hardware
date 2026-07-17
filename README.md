@@ -6,7 +6,10 @@
     Dark Red: #C83434
     Light Red: #CE4785
  -->
-  <img src="./hardware/images/svg/snowflake.svg">
+  <picture>
+    <img src="./images/svg/snowflake.svg" alt="The PCB of the Snowflake Keyboard." />
+  </picture>
+  >
   <br><br>
   <b>Snowflake</b>
   <p>My first 100% self made keyboard.</p>

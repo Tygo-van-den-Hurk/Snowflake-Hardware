@@ -36,7 +36,7 @@ units:
   # Padding Variables
   px: cx + 4
   py: cy + 4
-  # Microcontroller sizes
+  # Micro controller sizes
   Mx: 19
   My: 32
   # TRRS connector sizes
@@ -1005,7 +1005,7 @@ pcbs.snowflake:
               y: *route-from-top-via-to-higher-pad-stop-2-y
               x: *route-from-top-via-to-higher-pad-stop-2-x-left
             end:
-              y: &start-inter-key-collum-y -8.5
+              y: &start-inter-key-column-y -8.5
               x: &route-to-neighboring-key-x-left -4.7
     route-from-higher-back-pad-to-upper-key:
       what: routing/trace
@@ -1018,7 +1018,7 @@ pcbs.snowflake:
               y: *route-from-top-via-to-higher-pad-stop-2-y
               x: *route-from-top-via-to-higher-pad-stop-2-x-right
             end:
-              y: *start-inter-key-collum-y
+              y: *start-inter-key-column-y
               x: &route-to-neighboring-key-x-right 4.7
     #` INTER KEY ROUTES : higher holes to lower key
     route-from-higher-hole-pad-to-lower-key-left:
@@ -1033,7 +1033,7 @@ pcbs.snowflake:
               y: *route-from-top-via-to-higher-pad-stop-3-y
             end:
               x: *route-to-neighboring-key-x-left
-              y: &start-inter-key-collum-y-lower 8.5
+              y: &start-inter-key-column-y-lower 8.5
     route-from-higher-hole-pad-to-lower-key-right:
       what: routing/trace
       where: *main_key_matrix_except_bottom
@@ -1046,5 +1046,5 @@ pcbs.snowflake:
               y: *route-from-top-via-to-higher-pad-stop-3-y
             end:
               x: *route-to-neighboring-key-x-right
-              y: *start-inter-key-collum-y-lower
+              y: *start-inter-key-column-y-lower
 # ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~ #
