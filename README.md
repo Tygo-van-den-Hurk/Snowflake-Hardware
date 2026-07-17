@@ -62,20 +62,19 @@
 </div>
 <br>
 
-## Overview
+This repository is for the journey of me making my first keyboard: _Snowflake_.
+I wanted a keyboard that works for me, I wanted something that I could take
+with me anywhere and would work the way I designed it to do. This also was a
+good excuse to learn about keyboards which is something I've wanted to do for
+a while now.
 
-So this repository is for the journey of me making my first keyboard:
-_Snowflake_. I wanted a keyboard that works for me, I wanted something that I
-could take with me anywhere and would work the way I designed it to do. This
-also was a good excuse to learn about keyboards which is something I've wanted
-to do for a while now.
+## Software
 
-## Documentation
+Since every hardware iteration has different software configuration they've
+been moved into their own repositories:
 
-There are two parts to this journey: [hardware], and [software]. You can learn
-more in their respective documentation submodules. If you need to know anything
-else and it's not in the CI you can open a issue or even PR and I'll fix/add
-it.
+- v1: doesn't have firmware as the PCB had errors in it.
+- v2: has [its own firmware repository][v2] for firmware.
 
 ## Credits
 
@@ -92,5 +91,4 @@ To see how to start or develop see [CONTRIBUTING.md][contributing].
 [@raju]: https://github.com/RajuBuddharaju
 [@tygo]: https://redirects.tygo.van.den.hurk.dev/github/personal/
 [contributing]: ./CONTRIBUTING.md
-[hardware]: ./hardware/README.md
-[software]: ./software/README.md
+[v2]: https://github.com/Tygo-van-den-Hurk/Snowflake-v2-Firmware
