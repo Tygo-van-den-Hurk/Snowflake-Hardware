@@ -1,7 +1,9 @@
 {
   writeShellApplication,
   nodemon,
+  bash,
   git,
+  nix,
   ...
 }:
 
@@ -10,7 +12,9 @@ writeShellApplication {
   name = "watch-pcb";
   text = builtins.readFile ./script.bash;
   runtimeInputs = [
-    git
     nodemon
+    bash
+    git
+    nix
   ];
 }

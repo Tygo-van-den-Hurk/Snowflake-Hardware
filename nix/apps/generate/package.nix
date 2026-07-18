@@ -2,6 +2,7 @@
   writeShellApplication,
   ergogen,
   git,
+  nix,
   ...
 }:
 
@@ -10,7 +11,8 @@ writeShellApplication {
   name = "generate";
   text = builtins.readFile ./script.bash;
   runtimeInputs = [
-    git
     ergogen
+    git
+    nix
   ];
 }
