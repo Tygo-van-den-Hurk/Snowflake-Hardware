@@ -1,4 +1,5 @@
-set -e
+#!/usr/bin/env bash
+set -euo pipefail
 root="$(git rev-parse --show-toplevel)"
 nodemon \
   --exec "nix --option warn-dirty false --option abort-on-warn true run '$root#update-pcb'" \
