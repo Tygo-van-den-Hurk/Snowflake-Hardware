@@ -90,11 +90,14 @@
     "convco",
     "deadnix",
     "dont",
+    "Dwgs",
     "edolstra",
     "ergogen",
     "gitlint",
+    "hotswap",
     "Hurk",
     "jscad",
+    "keycaps",
     "kicad",
     "mdformat",
     "Narkoleptika",
@@ -110,6 +113,7 @@
     "pcbs",
     "pkgs",
     "pname",
+    "promicro",
     "Raju",
     "shellcheck",
     "shfmt",
@@ -117,11 +121,13 @@
     "statix",
     "stdenv",
     "tedit",
+    "thumbfan",
     "toplevel",
     "treefmt",
     "TRRS",
     "tstamp",
     "Tygo",
-    "vrml"
+    "vrml",
+    "wuerth"
   ]
 }
